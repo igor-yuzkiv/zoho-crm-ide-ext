@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar {
+    @apply rounded-2xl bg-haze-200;
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-track {
+    @apply rounded-full bg-haze-200;
+}
+::-webkit-scrollbar-thumb {
+    @apply bg-haze-500 rounded-2xl;
+}
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-haze-700;
+}
