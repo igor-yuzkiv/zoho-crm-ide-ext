@@ -26,16 +26,20 @@ export function useFunctionsStore() {
         const limit = 50
         let hasMore = false
 
+        let items: CrmFunction[] = []
         do {
             const response = await fetchFunctions(tabsStore.targetTab.id, start, limit).catch(() => [])
             if (!response.length) {
                 break
             }
 
-            functions.value = [...functions.value, ...response]
+            items = [...items, ...response]
             hasMore = response.length === limit
             start += limit
         } while (hasMore)
+
+        functions.value = items.sort((a, b) => a.display_name.localeCompare(b.display_name))
+        console.log('functions', functions.value)
     }
 
     async function loadFunctionDetail(id: string): Promise<Maybe<CrmFunction>> {

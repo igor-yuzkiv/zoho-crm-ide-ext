@@ -13,8 +13,10 @@ const functionScript = ref<string>('')
 async function onClickFunction(item: CrmFunction) {
     if (item?.script) {
         functionScript.value = item.script
+        console.log('details', item)
     } else {
         const details = await functionsStore.loadFunctionDetail(item.id)
+        console.log('details', details)
         functionScript.value = details?.script || ''
     }
     functionsStore.selectFunction(item.id)
