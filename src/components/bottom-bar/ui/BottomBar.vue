@@ -7,7 +7,7 @@ const appStore = useAppStore()
 
 <template>
     <div
-        class="bg-base-600 dark:bg-base-800 flex h-[24px] w-full items-center justify-between px-4 text-[15px] font-medium text-white"
+        class="flex h-[24px] w-full items-center justify-between bg-base-600 px-4 text-[15px] font-medium text-white dark:bg-base-800"
     >
         <div></div>
         <div class="flex items-center gap-x-1">
