@@ -1,17 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
-import * as monaco from 'monaco-editor'
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
-
-self.MonacoEnvironment = {
-    getWorker(_, label) {
-        if (label === 'javascript' || label === 'typescript') {
-            return new tsWorker()
-        }
-        return new editorWorker()
-    },
-}
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 
 const modelValue = defineModel<string>()
 const editor = shallowRef<monaco.editor.IStandaloneCodeEditor>()
@@ -43,6 +32,7 @@ function createEditor() {
 
 watch(modelValue, (value) => {
     if (editor.value && editor.value.getValue() !== value) {
+        console.log('setting value', value)
         editor.value.setValue(value || '')
     }
 })

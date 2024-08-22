@@ -56,10 +56,13 @@ export function useFunctionsStore() {
         if (index === -1) {
             functions.value.push(response)
         } else {
-            functions.value[index] = response
+            functions.value[index] = {
+                ...functions.value[index],
+                ...response,
+            }
         }
 
-        return response
+        return functions.value[index]
     }
 
     return {
