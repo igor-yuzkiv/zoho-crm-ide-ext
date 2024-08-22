@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { CrmFunction, FunctionCategory } from '@/types.ts'
 import { Icon } from '@iconify/vue'
+import { computed } from 'vue'
 
-defineProps<{ items: CrmFunction[] }>()
+const props = defineProps<{ items: CrmFunction[] }>()
 const emit = defineEmits(['item:click'])
 
 const FunctionAppearances = {
@@ -37,6 +38,10 @@ const FunctionAppearances = {
     },
 }
 
+const itemsForDisplay = computed(() => {
+    return props.items.filter((i) => Boolean(i?.script))
+})
+
 function getAppearances(item: CrmFunction) {
     if (!(item.category in FunctionAppearances)) {
         return FunctionAppearances.default
@@ -55,12 +60,11 @@ function onClick(item: CrmFunction) {
 <template>
     <ul v-if="items?.length">
         <li
-            v-for="item in items"
+            v-for="item in itemsForDisplay"
             :key="item.id"
             :title="item.display_name"
             class="flex cursor-pointer items-center gap-x-2 px-2 py-1"
             :class="{
-                'opacity-50': !item?.script,
                 'bg-base-200 dark:bg-base-900': item.selected,
                 'hover:bg-base-200 dark:hover:bg-base-950': !item.selected,
             }"
@@ -69,7 +73,7 @@ function onClick(item: CrmFunction) {
             <div>
                 <Icon :icon="getAppearances(item).icon" class="h-5 w-5" :class="getAppearances(item).class" />
             </div>
-            <div class="truncate">{{ item.display_name }}</div>
+            <div class="truncate">{{ item.name }}</div>
         </li>
     </ul>
 </template>

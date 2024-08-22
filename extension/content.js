@@ -8,6 +8,5 @@ function injectScript(file_path, tag = 'body') {
 }
 
 ;(async () => {
-    console.log('------------CONTENT------------')
     injectScript(chrome.runtime.getURL('injection.js'), 'body')
 })()

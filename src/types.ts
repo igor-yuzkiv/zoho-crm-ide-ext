@@ -30,14 +30,32 @@ export type CrmFunctionWorkflow = {
     returnTypes: string
 }
 
+export type CrmFunctionAssociatedPlace = {
+    id: string
+    _type: string
+    module: string
+    name: string
+}
+
+export type CrmFunctionParam = {
+    name: string
+    type: string
+}
+
 export type CrmFunction = {
     id: string
     display_name: string
+    name: string
+    nameSpace: string
     description: string
     category: FunctionCategory
     language: string
-    updatedTime: number
     workflow: CrmFunctionWorkflow
+    modified_on: string
+    modified_by: string
+    updatedTime: string
     selected: boolean
     script?: string
+    associated_place?: CrmFunctionAssociatedPlace[]
+    params: CrmFunctionParam[]
 }

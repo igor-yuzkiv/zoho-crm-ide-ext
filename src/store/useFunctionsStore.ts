@@ -62,10 +62,15 @@ export function useFunctionsStore() {
         }
     }
 
+    async function downloadZip() {
+        console.log('Download ZIP', functions.value)
+    }
+
     return {
         functions,
         selectedFunction,
         doSelectFunction,
         loadFunctions,
+        downloadZip,
     }
 }
