@@ -17,7 +17,6 @@ const FunctionAppearances = {
     },
     [FunctionCategory.scheduler]: {
         icon: 'mingcute:time-fill',
-
         class: 'text-yellow-500',
     },
     [FunctionCategory.standalone]: {
@@ -38,9 +37,7 @@ const FunctionAppearances = {
     },
 }
 
-const itemsForDisplay = computed(() => {
-    return props.items.filter((i) => Boolean(i?.script))
-})
+const itemsForDisplay = computed(() => props.items.filter((i) => Boolean(i?.script)))
 
 function getAppearances(item: CrmFunction) {
     if (!(item.category in FunctionAppearances)) {
@@ -58,7 +55,7 @@ function onClick(item: CrmFunction) {
 </script>
 
 <template>
-    <ul v-if="items?.length">
+    <ul>
         <li
             v-for="item in itemsForDisplay"
             :key="item.id"

@@ -1,53 +1,98 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { CrmFunction } from '@/types.ts'
+
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useAppStore } from '@/store/useAppStore.ts'
 import { useTabsStore } from '@/store/useTabsStore.ts'
 import { useFunctionsStore } from '@/store/useFunctionsStore.ts'
+import { createZipAndDownload } from '@/utils.ts'
 
-// import CodeEditor from '@/components/CodeEditor.vue'
 import { Icon } from '@iconify/vue'
+import InputText from 'primevue/inputtext'
+import CodeEditor from '@/components/CodeEditor.vue'
 import FunctionsList from '@/components/FunctionsList.vue'
 import FunctionInfo from '@/components/FunctionInfo.vue'
-import SearchDialog from '@/components/SearchDialog.vue'
 
 const appStore = useAppStore()
-const tabs = useTabsStore()
-const { functions, selectedFunction, doSelectFunction, loadFunctions, downloadZip } = useFunctionsStore()
+const tabsStore = useTabsStore()
+const { functions, selectedFunction, doSelectFunction, loadFunctions } = useFunctionsStore()
 const isVisibleSearchBar = ref(false)
 
 onMounted(async () => {
     appStore.toggleLoading()
-    tabs.observe()
-    await tabs.loadTabs()
+
+    tabsStore.observe()
+    await tabsStore.loadTabs()
     await loadFunctions()
+
     appStore.toggleLoading()
 })
 
-onBeforeUnmount(() => tabs.destroy())
+const searchInput = ref('')
+const functionsForDisplay = computed(() => {
+    const search = searchInput.value.toLowerCase()
+    return functions.value.filter((item) => JSON.stringify(item).toLowerCase().includes(search))
+})
+
+async function onClickExport() {
+    appStore.toggleLoading()
+
+    const items = functions.value.reduce((acc: Array<{ name: string; content: string }>, item: CrmFunction) => {
+        if (item?.script) {
+            acc.push({
+                name: `${item.name}.deluge.js`,
+                content: item.script,
+            })
+        }
+        acc.push({
+            name: `${item.name}.meta.json`,
+            content: JSON.stringify(item, null, 2),
+        })
+
+        return acc
+    }, [])
+
+    await createZipAndDownload(items)
+}
+
+onBeforeUnmount(() => tabsStore.destroy())
 </script>
 
 <template>
     <div class="relative flex h-screen max-h-screen min-w-[800px] flex-col overflow-hidden">
-        <div class="bar gap-x-4" :class="{ 'opacity-50': appStore.isLoading }">
-            <button class="hover:underline" :disabled="appStore.isLoading" @click="downloadZip">Download</button>
-            <button class="hover:underline" :disabled="appStore.isLoading" @click="isVisibleSearchBar = true">
-                Search
+        <div class="bar gap-x-4">
+            <button
+                class="hover:underline"
+                @click="onClickExport"
+                :disabled="appStore.isLoading"
+                :class="{ 'opacity-50': appStore.isLoading }"
+            >
+                Export
             </button>
+            <button class="hover:underline" @click="isVisibleSearchBar = true">Search</button>
+        </div>
+
+        <div class="flex w-full" v-if="isVisibleSearchBar">
+            <InputText
+                placeholder="Start typing to search..."
+                size="small"
+                class="w-full"
+                v-model.trim.lazy="searchInput"
+            />
         </div>
 
         <main class="flex flex-1 overflow-auto">
             <FunctionsList
                 v-if="[0, 2].includes(appStore.layoutView)"
-                :items="functions"
+                :items="functionsForDisplay"
                 @item:click="doSelectFunction($event.id)"
                 class="side-panel"
                 :style="{ width: '300px' }"
             />
 
-            <!--<CodeEditor :model-value="selectedFunction?.script" />-->
-            <div class="flex flex-1 overflow-auto bg-white p-2 dark:bg-black">
-                <pre>{{ selectedFunction?.script }}</pre>
-            </div>
+            <CodeEditor :model-value="selectedFunction?.script" />
+            <!--<div class="flex flex-1 overflow-auto bg-white p-2 dark:bg-black"><pre>{{ selectedFunction?.script }}</pre></div>-->
+
             <FunctionInfo
                 v-if="appStore.layoutView === 0 && selectedFunction"
                 :info="selectedFunction"
@@ -62,8 +107,6 @@ onBeforeUnmount(() => tabs.destroy())
                 <Icon :icon="appStore.layoutViewIcon" class="h-5 w-5" />
             </button>
         </div>
-
-        <SearchDialog v-model:visible="isVisibleSearchBar" />
     </div>
 </template>
 

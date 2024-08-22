@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CrmFunction, CrmFunctionAssociatedPlace } from '@/types.ts'
+import { CrmFunction } from '@/types.ts'
 import { get } from 'lodash'
 import Divider from 'primevue/divider'
 import Tag from 'primevue/tag'

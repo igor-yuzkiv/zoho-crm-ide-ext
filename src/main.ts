@@ -1,5 +1,5 @@
 import '@/style.css'
-// import '@/plugins/monaco-editor/worker.ts'
+import '@/plugins/monaco-editor/worker.ts'
 
 import { createApp } from 'vue'
 import App from '@/App.vue'
