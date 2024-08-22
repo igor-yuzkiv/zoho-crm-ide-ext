@@ -8,11 +8,9 @@ import { sleep } from '@/utils'
 export function useFunctionsStore() {
     const tabsStore = useTabsStore()
     const functions = ref<CrmFunction[]>([])
-    const selectedFunction = computed<Maybe<CrmFunction>>(() => {
-        return functions.value.find((item) => item.selected)
-    })
+    const selectedFunction = computed<Maybe<CrmFunction>>(() => functions.value.find((item) => item.selected))
 
-    function selectFunction(id: string) {
+    function doSelectFunction(id: string) {
         functions.value = functions.value.map((item) => ({ ...item, selected: item.id === id }))
     }
 
@@ -67,7 +65,7 @@ export function useFunctionsStore() {
     return {
         functions,
         selectedFunction,
-        selectFunction,
+        doSelectFunction,
         loadFunctions,
     }
 }
