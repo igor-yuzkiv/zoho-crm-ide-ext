@@ -1,9 +1,41 @@
 <script setup lang="ts">
-import { CrmFunction, FunctionAppearances } from '@/entities/function/types.ts'
+import { CrmFunction, FunctionCategory } from '@/types.ts'
 import { Icon } from '@iconify/vue'
 
 defineProps<{ items: CrmFunction[] }>()
 const emit = defineEmits(['item:click'])
+
+const FunctionAppearances = {
+    [FunctionCategory.button]: {
+        icon: 'mdi:button-pointer',
+        class: 'text-blue-500',
+    },
+    [FunctionCategory.automation]: {
+        icon: 'mdi:workflow',
+        class: 'text-green-500',
+    },
+    [FunctionCategory.scheduler]: {
+        icon: 'mingcute:time-fill',
+
+        class: 'text-yellow-500',
+    },
+    [FunctionCategory.standalone]: {
+        icon: 'ph:code-fill',
+        class: 'text-red-500',
+    },
+    [FunctionCategory.crmfundamentals]: {
+        icon: 'f7:question',
+        class: 'text-red-500',
+    },
+    [FunctionCategory.dynamic]: {
+        icon: 'f7:question',
+        class: 'text-red-500',
+    },
+    default: {
+        icon: 'mdi:file-code',
+        class: 'text-gray-500',
+    },
+}
 
 function getAppearances(item: CrmFunction) {
     if (!(item.category in FunctionAppearances)) {

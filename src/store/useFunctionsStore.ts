@@ -1,9 +1,9 @@
 import { computed, ref } from 'vue'
-import { useTabsStore } from '@/entities/tab/useTabsStore.ts'
-import { fetchFunctionDetail, fetchFunctions } from '@/entities/function/api.ts'
-import { CrmFunction } from '@/entities/function/types.ts'
-import { Maybe } from '@/app/types.ts'
-import { sleep } from '@/utils'
+import { useTabsStore } from '@/store/useTabsStore.ts'
+import { fetchFunctionDetail, fetchFunctions } from '@/api/functionsApi.ts'
+import { CrmFunction } from '@/types.ts'
+import { Maybe } from '@/types.ts'
+import { sleep } from '@/utils.ts'
 
 export function useFunctionsStore() {
     const tabsStore = useTabsStore()

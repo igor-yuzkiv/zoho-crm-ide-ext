@@ -1,8 +1,9 @@
-// import '@/app/plugins/monaco-editor/worker.ts'
-import '@/app/assets/style.css'
+import '@/style.css'
+// import '@/plugins/monaco-editor/worker.ts'
+
 import { createApp } from 'vue'
-import App from '@/app/App.vue'
-import { registerPlugins } from '@/app/plugins'
+import App from '@/App.vue'
+import { registerPlugins } from '@/plugins'
 import { createPinia } from 'pinia'
 
 const pinia = createPinia()
