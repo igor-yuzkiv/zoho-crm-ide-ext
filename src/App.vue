@@ -2,7 +2,6 @@
 import { CrmFunction } from '@/types.ts'
 
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useAppStore } from '@/store/useAppStore.ts'
 import { useTabsStore } from '@/store/useTabsStore.ts'
 import { useFunctionsStore } from '@/store/useFunctionsStore.ts'
 import { createZipAndDownload } from '@/utils.ts'
@@ -13,19 +12,20 @@ import CodeEditor from '@/components/CodeEditor.vue'
 import FunctionsList from '@/components/FunctionsList.vue'
 import FunctionInfo from '@/components/FunctionInfo.vue'
 
-const appStore = useAppStore()
 const tabsStore = useTabsStore()
 const { functions, selectedFunction, doSelectFunction, loadFunctions } = useFunctionsStore()
+
+const isLoading = ref(false)
 const isVisibleSearchBar = ref(false)
 
 onMounted(async () => {
-    appStore.toggleLoading()
+    isLoading.value = true
 
     tabsStore.observe()
     await tabsStore.loadTabs()
     await loadFunctions()
 
-    appStore.toggleLoading()
+    isLoading.value = false
 })
 
 const searchInput = ref('')
@@ -35,7 +35,7 @@ const functionsForDisplay = computed(() => {
 })
 
 async function onClickExport() {
-    appStore.toggleLoading()
+    isLoading.value = true
 
     const items = functions.value.reduce((acc: Array<{ name: string; content: string }>, item: CrmFunction) => {
         if (item?.script) {
@@ -53,6 +53,8 @@ async function onClickExport() {
     }, [])
 
     await createZipAndDownload(items)
+
+    isLoading.value = false
 }
 
 onBeforeUnmount(() => tabsStore.destroy())
@@ -64,8 +66,8 @@ onBeforeUnmount(() => tabsStore.destroy())
             <button
                 class="hover:underline"
                 @click="onClickExport"
-                :disabled="appStore.isLoading"
-                :class="{ 'opacity-50': appStore.isLoading }"
+                :disabled="isLoading"
+                :class="{ 'opacity-50': isLoading }"
             >
                 Export
             </button>
@@ -81,31 +83,23 @@ onBeforeUnmount(() => tabsStore.destroy())
             />
         </div>
 
-        <main class="flex flex-1 overflow-auto">
+        <main class="flex h-full w-full overflow-auto">
             <FunctionsList
-                v-if="[0, 2].includes(appStore.layoutView)"
                 :items="functionsForDisplay"
                 @item:click="doSelectFunction($event.id)"
-                class="side-panel"
-                :style="{ width: '300px' }"
+                class="side-panel w-[15vw]"
             />
 
-            <CodeEditor :model-value="selectedFunction?.script" />
-            <!--<div class="flex flex-1 overflow-auto bg-white p-2 dark:bg-black"><pre>{{ selectedFunction?.script }}</pre></div>-->
-
-            <FunctionInfo
-                v-if="appStore.layoutView === 0 && selectedFunction"
-                :info="selectedFunction"
-                class="side-panel"
-                :style="{ width: '400px' }"
+            <CodeEditor
+                :model-value="selectedFunction?.script"
+                :class="['h-full', selectedFunction ? 'w-[65vw]' : 'w-[85vw]']"
             />
+
+            <FunctionInfo v-if="selectedFunction" :info="selectedFunction" class="side-panel w-[20vw]" />
         </main>
 
-        <div class="bar justify-between">
-            <Icon v-if="appStore.isLoading" icon="prime:spinner" class="h-5 w-5 animate-spin"></Icon>
-            <button @click="appStore.toggleLayoutView">
-                <Icon :icon="appStore.layoutViewIcon" class="h-5 w-5" />
-            </button>
+        <div class="bar">
+            <Icon v-if="isLoading" icon="prime:spinner" class="h-5 w-5 animate-spin"></Icon>
         </div>
     </div>
 </template>

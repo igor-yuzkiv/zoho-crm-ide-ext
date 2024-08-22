@@ -49,7 +49,7 @@ defineExpose({ editor })
 </script>
 
 <template>
-    <div ref="editorRef" class="h-full w-full"></div>
+    <div ref="editorRef"></div>
 </template>
 
 <style scoped></style>
