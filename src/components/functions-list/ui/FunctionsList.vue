@@ -14,8 +14,8 @@ defineEmits(['item:click'])
             :title="item.display_name"
             class="flex cursor-pointer items-center gap-x-2 px-2 py-1"
             :class="{
-                'bg-base-100 dark:bg-base-950': item.selected,
-                'hover:bg-base-100 dark:hover:bg-base-950': !item.selected,
+                'bg-base-200 dark:bg-base-900': item.selected,
+                'hover:bg-base-200 dark:hover:bg-base-950': !item.selected,
             }"
             @click="$emit('item:click', item)"
         >

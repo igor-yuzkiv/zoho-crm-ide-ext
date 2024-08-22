@@ -1,6 +1,6 @@
-import './monacoWorker.ts'
-import { createApp } from 'vue'
+// import './monacoWorker.ts'
 import './app/style.css'
+import { createApp } from 'vue'
 import App from '@/app/App.vue'
 import { registerPlugins } from '@/app/plugins'
 import { createPinia } from 'pinia'

@@ -7,7 +7,7 @@ export default function (app: App) {
         theme: {
             preset: Aura,
             options: {
-                darkModeSelector: 'system', //.dark-mode
+                darkModeSelector: 'system',
             },
         },
     })

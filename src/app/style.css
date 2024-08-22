@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 ::-webkit-scrollbar {
-    @apply rounded-2xl bg-base-950;
+    @apply rounded-2xl dark:bg-base-950 bg-base-100;
     width: 4px;
     height: 4px;
 }
 ::-webkit-scrollbar-track {
-    @apply rounded-full bg-base-950;
+    @apply rounded-full dark:bg-base-950 bg-base-100;
 }
 ::-webkit-scrollbar-thumb {
-    @apply bg-base-900 rounded-2xl;
+    @apply dark:bg-base-900 rounded-2xl bg-base-200;
 }
 ::-webkit-scrollbar-thumb:hover {
-    @apply bg-base-950;
+    @apply dark:bg-base-950 bg-base-100;
 }
