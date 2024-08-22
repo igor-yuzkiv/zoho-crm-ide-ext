@@ -12,7 +12,7 @@ function createEditor() {
     }
 
     const _editor = monaco.editor.create(editorRef.value, {
-        theme: 'vs-light',
+        theme: 'vs-dark',
         language: 'typescript',
         value: modelValue.value,
         automaticLayout: true,

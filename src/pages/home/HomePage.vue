@@ -31,11 +31,12 @@ onMounted(() => {
 <template>
     <div class="flex h-full w-full flex-col overflow-hidden">
         <div
-            class="flex h-[24px] w-full items-center justify-between bg-haze-950 px-4 text-[15px] font-medium text-white"
+            class="bg-base-800 flex h-[24px] w-full items-center justify-between px-4 text-[15px] font-medium text-white"
         >
             <div class="flex items-center gap-x-4">
                 <div class="cursor-pointer hover:underline">File</div>
-                <div class="cursor-pointer hover:underline">Tools</div>
+                <div class="cursor-pointer hover:underline">View</div>
+                <div class="cursor-pointer hover:underline">Search</div>
             </div>
             <div>
                 <div class="text-right" v-if="functionsStore.selectedFunction.value">
@@ -45,12 +46,19 @@ onMounted(() => {
         </div>
 
         <div class="flex h-full w-full overflow-auto">
-            <div class="flex h-full w-72 flex-col overflow-auto border-r border-haze-200 pb-1">
+            <div class="bg-base-200 dark:bg-base-950 dark:text-base-100 flex h-full w-72 flex-col overflow-auto pb-1">
                 <FunctionsList :items="functionsStore.functions.value" @item:click="onClickFunction" />
             </div>
-            <div class="flex-grow bg-white p-2">
+            <div class="flex-grow bg-white p-2 dark:bg-black">
+                <!--<pre>{{ functionScript }}</pre>-->
                 <CodeEditor v-model="functionScript" />
             </div>
+        </div>
+
+        <div
+            class="bg-base-800 flex h-[24px] w-full items-center justify-between px-4 text-[15px] font-medium text-white"
+        >
+            <span class="text-sm"> Synchronization... </span>
         </div>
     </div>
 </template>

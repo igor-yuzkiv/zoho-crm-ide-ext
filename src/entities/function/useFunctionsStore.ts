@@ -40,6 +40,7 @@ export function useFunctionsStore() {
 
         functions.value = items.sort((a, b) => a.display_name.localeCompare(b.display_name))
         console.log('functions', functions.value)
+        console.log('categories', new Set(functions.value.map((item) => item.category)))
     }
 
     async function loadFunctionDetail(id: string): Promise<Maybe<CrmFunction>> {

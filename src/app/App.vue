@@ -24,7 +24,7 @@ onBeforeUnmount(() => tabsStore.destroy())
 </script>
 
 <template>
-    <div class="bg-haze-50 flex h-screen w-screen">
+    <div class="bg-base-50 flex h-screen w-screen">
         <main class="flex flex-grow flex-col">
             <router-view v-if="appStore.appReady" />
         </main>
