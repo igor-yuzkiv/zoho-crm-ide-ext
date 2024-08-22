@@ -8,14 +8,14 @@ const appStore = useAppStore()
 const tabsStore = useTabsStore()
 
 onMounted(() => {
-    appStore.toggleLoader()
+    appStore.toggleOverlay()
 
     tabsStore.observe()
     tabsStore
         .loadTabs()
         .catch(console.error)
         .finally(() => {
-            appStore.toggleLoader()
+            appStore.toggleOverlay()
             appStore.appReady = true
         })
 })
@@ -29,7 +29,7 @@ onBeforeUnmount(() => tabsStore.destroy())
             <router-view v-if="appStore.appReady" />
         </main>
 
-        <LoadingIndicator v-if="appStore.showLoader" />
+        <LoadingIndicator v-if="appStore.showOverlay" />
     </div>
 </template>
 

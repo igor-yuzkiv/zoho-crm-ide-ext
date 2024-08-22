@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import { useAppStore } from '@/app/useAppStore.ts'
+
+const appStore = useAppStore()
 </script>
 
 <template>
@@ -8,7 +11,7 @@ import { Icon } from '@iconify/vue'
     >
         <div></div>
         <div class="flex items-center gap-x-1">
-            <Icon icon="prime:spinner" class="h-5 w-5 animate-spin" />
+            <Icon v-if="appStore.isLoading" icon="prime:spinner" class="h-5 w-5 animate-spin" />
         </div>
     </div>
 </template>

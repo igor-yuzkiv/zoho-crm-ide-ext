@@ -1,9 +1,23 @@
 <script setup lang="ts">
-import { CrmFunction } from '@/entities/function/types.ts'
+import { CrmFunction, FunctionAppearances } from '@/entities/function/types.ts'
 import { Icon } from '@iconify/vue'
 
 defineProps<{ items: CrmFunction[] }>()
-defineEmits(['item:click'])
+const emit = defineEmits(['item:click'])
+
+function getAppearances(item: CrmFunction) {
+    if (!(item.category in FunctionAppearances)) {
+        return FunctionAppearances.default
+    }
+
+    return FunctionAppearances[item.category]
+}
+
+function onClick(item: CrmFunction) {
+    if (item.script) {
+        emit('item:click', item)
+    }
+}
 </script>
 
 <template>
@@ -14,13 +28,14 @@ defineEmits(['item:click'])
             :title="item.display_name"
             class="flex cursor-pointer items-center gap-x-2 px-2 py-1"
             :class="{
+                'opacity-50': !item?.script,
                 'bg-base-200 dark:bg-base-900': item.selected,
                 'hover:bg-base-200 dark:hover:bg-base-950': !item.selected,
             }"
-            @click="$emit('item:click', item)"
+            @click="onClick(item)"
         >
             <div>
-                <Icon icon="charm:file-code" class="h-5 w-5" />
+                <Icon :icon="getAppearances(item).icon" class="h-5 w-5" :class="getAppearances(item).class" />
             </div>
             <div class="truncate">{{ item.display_name }}</div>
         </li>

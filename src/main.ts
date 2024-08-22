@@ -1,4 +1,4 @@
-// import './monacoWorker.ts'
+import './app/monacoWorker.ts'
 import './app/style.css'
 import { createApp } from 'vue'
 import App from '@/app/App.vue'

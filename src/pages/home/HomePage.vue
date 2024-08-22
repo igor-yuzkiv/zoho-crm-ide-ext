@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import { CodeEditor } from '@//components/code-editor'
+import { CodeEditor } from '@//components/code-editor'
 import FunctionsList from '@//components/functions-list/ui/FunctionsList.vue'
 import { useFunctionsStore } from '@/entities/function/useFunctionsStore.ts'
 import { onMounted, ref } from 'vue'
@@ -13,20 +13,13 @@ const functionsStore = useFunctionsStore()
 const functionScript = ref<string>('')
 
 async function onClickFunction(item: CrmFunction) {
-    if (item?.script) {
-        functionScript.value = item.script
-        console.log('details', item)
-    } else {
-        const details = await functionsStore.loadFunctionDetail(item.id)
-        console.log('details', details)
-        functionScript.value = details?.script || ''
-    }
+    functionScript.value = item?.script || ''
     functionsStore.selectFunction(item.id)
 }
 
 onMounted(() => {
-    appStore.toggleLoader()
-    functionsStore.loadFunctions().finally(() => appStore.toggleLoader())
+    appStore.toggleLoading()
+    functionsStore.loadFunctions().finally(() => appStore.toggleLoading())
 })
 </script>
 
@@ -39,8 +32,8 @@ onMounted(() => {
                 <FunctionsList :items="functionsStore.functions.value" @item:click="onClickFunction" />
             </div>
             <div class="flex-grow bg-white p-2 dark:bg-black">
-                <pre>{{ functionScript }}</pre>
-                <!--                <CodeEditor v-model="functionScript" />-->
+                <!--                <pre>{{ functionScript }}</pre>-->
+                <CodeEditor v-model="functionScript" />
             </div>
         </div>
 

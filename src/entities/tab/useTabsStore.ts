@@ -1,9 +1,9 @@
 import { computed, ref } from 'vue'
 import QueryInfo = chrome.tabs.QueryInfo
 import Tab = chrome.tabs.Tab
-import { Maybe } from '@/types.ts'
+import { Maybe } from '@/app/types.ts'
 import { defineStore } from 'pinia'
-import { CRM_DOMAINS } from '@/constants.ts'
+import { CRM_DOMAINS } from '@/app/constants.ts'
 
 export const useTabsStore = defineStore('chrome.tab', () => {
     const tabs = ref<Tab[]>([])

@@ -1,6 +1,6 @@
 import { CrmFunction } from '@/entities/function/types.ts'
 import lodash from 'lodash'
-import { Maybe } from '@/types.ts'
+import { Maybe } from '@/app/types.ts'
 
 export async function fetchFunctions(tabId: number, start: number = 0, limit: number = 50): Promise<CrmFunction[]> {
     const result = await chrome.scripting.executeScript({

@@ -2,7 +2,8 @@ import { computed, ref } from 'vue'
 import { useTabsStore } from '@/entities/tab/useTabsStore.ts'
 import { fetchFunctionDetail, fetchFunctions } from '@/entities/function/api.ts'
 import { CrmFunction } from '@/entities/function/types.ts'
-import { Maybe } from '@/types.ts'
+import { Maybe } from '@/app/types.ts'
+import { sleep } from '@/utils'
 
 export function useFunctionsStore() {
     const tabsStore = useTabsStore()
@@ -39,38 +40,34 @@ export function useFunctionsStore() {
         } while (hasMore)
 
         functions.value = items.sort((a, b) => a.display_name.localeCompare(b.display_name))
-        console.log('functions', functions.value)
-        console.log('categories', new Set(functions.value.map((item) => item.category)))
+
+        await loadFunctionsDetail()
     }
 
-    async function loadFunctionDetail(id: string): Promise<Maybe<CrmFunction>> {
-        if (!tabsStore.targetTab?.id) {
+    async function loadFunctionsDetail() {
+        if (!tabsStore.targetTab || !tabsStore.targetTab.id) {
             return
         }
 
-        const response = await fetchFunctionDetail(tabsStore.targetTab.id, id).catch(() => null)
-        if (!response) {
-            return
-        }
+        for (let i = 0; i < functions.value.length; i++) {
+            const response = await fetchFunctionDetail(tabsStore.targetTab.id, functions.value[i].id).catch(() => null)
+            if (!response) {
+                continue
+            }
 
-        const index = functions.value.findIndex((item) => item.id === id)
-        if (index === -1) {
-            functions.value.push(response)
-        } else {
-            functions.value[index] = {
-                ...functions.value[index],
+            functions.value[i] = {
+                ...functions.value[i],
                 ...response,
             }
-        }
 
-        return functions.value[index]
+            await sleep(100)
+        }
     }
 
     return {
         functions,
         selectedFunction,
         selectFunction,
-        loadFunctionDetail,
         loadFunctions,
     }
 }
