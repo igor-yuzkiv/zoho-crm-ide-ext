@@ -13,7 +13,7 @@ import FunctionsList from '@/components/FunctionsList.vue'
 import FunctionInfo from '@/components/FunctionInfo.vue'
 
 const tabsStore = useTabsStore()
-const { functions, selectedFunction, doSelectFunction, loadFunctions } = useFunctionsStore()
+const { functions, selectedFunction, doSelectFunction, loadFunctions, doRefreshSelectedFunction } = useFunctionsStore()
 
 const isLoading = ref(false)
 const isVisibleSearchBar = ref(false)
@@ -56,7 +56,6 @@ async function onClickExport() {
 
     isLoading.value = false
 }
-
 onBeforeUnmount(() => tabsStore.destroy())
 </script>
 
@@ -72,6 +71,7 @@ onBeforeUnmount(() => tabsStore.destroy())
                 Export
             </button>
             <button class="hover:underline" @click="isVisibleSearchBar = true">Search</button>
+            <button class="hover:underline" @click="doRefreshSelectedFunction">Refresh</button>
         </div>
 
         <div class="flex w-full" v-if="isVisibleSearchBar">

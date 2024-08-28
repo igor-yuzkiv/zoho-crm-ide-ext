@@ -62,10 +62,24 @@ export function useFunctionsStore() {
         }
     }
 
+    async function doRefreshSelectedFunction() {
+        if (!tabsStore.targetTab || !tabsStore.targetTab.id || !selectedFunction.value) {
+            return
+        }
+
+        const response = await fetchFunctionDetail(tabsStore.targetTab?.id, selectedFunction.value.id).catch(() => null)
+        if (response) {
+            functions.value = functions.value.map((item) =>
+                item.id === selectedFunction.value?.id ? { ...item, ...response } : item
+            )
+        }
+    }
+
     return {
         functions,
         selectedFunction,
         doSelectFunction,
         loadFunctions,
+        doRefreshSelectedFunction,
     }
 }
