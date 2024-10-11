@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { CrmFunction } from '@/types.ts'
-
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useTabsStore } from '@/store/useTabsStore.ts'
 import { useFunctionsStore } from '@/store/useFunctionsStore.ts'
-import { createZipAndDownload } from '@/utils.ts'
-
 import { Icon } from '@iconify/vue'
 import InputText from 'primevue/inputtext'
 import CodeEditor from '@/components/CodeEditor.vue'
 import FunctionsList from '@/components/FunctionsList.vue'
 import FunctionInfo from '@/components/FunctionInfo.vue'
+import JSZip from 'jszip'
 
 const tabsStore = useTabsStore()
 const { functions, selectedFunction, doSelectFunction, loadFunctions, doRefreshSelectedFunction } = useFunctionsStore()
@@ -36,23 +33,26 @@ const functionsForDisplay = computed(() => {
 
 async function onClickExport() {
     isLoading.value = true
+    const zip = new JSZip()
 
-    const items = functions.value.reduce((acc: Array<{ name: string; content: string }>, item: CrmFunction) => {
-        if (item?.script) {
-            acc.push({
-                name: `${item.name}.deluge.js`,
-                content: item.script,
-            })
+    for (const item of functions.value) {
+        const folder = zip.folder(item.name)
+        if (!folder) {
+            continue
         }
-        acc.push({
-            name: `${item.name}.meta.json`,
-            content: JSON.stringify(item, null, 2),
-        })
 
-        return acc
-    }, [])
+        if (item?.script) {
+            folder.file(`${item.name}.deluge.js`, item.script)
+        }
+        folder.file(`${item.name}.meta.json`, JSON.stringify(item, null, 2))
+    }
 
-    await createZipAndDownload(items)
+    const content = await zip.generateAsync({ type: 'blob' })
+    const url = URL.createObjectURL(content)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'functions.zip'
+    a.click()
 
     isLoading.value = false
 }
