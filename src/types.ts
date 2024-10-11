@@ -44,11 +44,13 @@ export type CrmFunctionParam = {
 
 export type CrmFunction = {
     id: string
+    api_name: string
     display_name: string
     name: string
     nameSpace: string
     description: string
     category: FunctionCategory
+    source: string
     language: string
     workflow: CrmFunctionWorkflow
     modified_on: string

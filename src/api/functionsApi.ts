@@ -32,12 +32,17 @@ export async function fetchFunctions(tabId: number, start: number = 0, limit: nu
     return lodash.get(result, '0.result.functions', [])
 }
 
-export async function fetchFunctionDetail(tabId: number, functionId: string): Promise<Maybe<CrmFunction>> {
+export async function fetchFunctionDetail(
+    tabId: number,
+    functionId: string,
+    source: string = 'crm',
+    language: string = 'deluge'
+): Promise<Maybe<CrmFunction>> {
     const result = await chrome.scripting.executeScript({
         target: { tabId },
-        args: [functionId],
-        func: async (functionId) => {
-            const url = `${window.location.origin}/crm/v2/settings/functions/${functionId}?category=automation&source=crm&language=deluge`
+        args: [functionId, source, language],
+        func: async (functionId, source, language) => {
+            const url = `${window.location.origin}/crm/v2/settings/functions/${functionId}?category=automation&source=${source}&language=${language}`
             const cookieItems = Object.fromEntries(
                 document.cookie
                     .split(';')

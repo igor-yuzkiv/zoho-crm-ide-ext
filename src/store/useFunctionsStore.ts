@@ -48,7 +48,15 @@ export function useFunctionsStore() {
         }
 
         for (let i = 0; i < functions.value.length; i++) {
-            const response = await fetchFunctionDetail(tabsStore.targetTab.id, functions.value[i].id).catch(() => null)
+            const functionId = functions.value[i]?.id
+            if (!functionId) {
+                continue
+            }
+            const { source, language } = functions.value[i] || { source: 'crm', language: 'deluge' }
+
+            const response = await fetchFunctionDetail(tabsStore.targetTab.id, functionId, source, language).catch(
+                console.error
+            )
             if (!response) {
                 continue
             }
