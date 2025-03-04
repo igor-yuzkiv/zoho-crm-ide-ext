@@ -1,3 +1,39 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/*@tailwind base;*/
+/*@tailwind components;*/
+/*@tailwind utilities;*/
+
+
+@layer tailwind-base, primevue, tailwind-utilities;
+
+@layer tailwind-base {
+    @tailwind base;
+}
+
+@layer tailwind-utilities {
+    @tailwind components;
+    @tailwind utilities;
+}
+
+::-webkit-scrollbar {
+    @apply rounded-2xl bg-gray-200;
+    width: 7px;
+    height: 7px;
+}
+::-webkit-scrollbar-track {
+    @apply bg-gray-200;
+}
+::-webkit-scrollbar-thumb {
+    @apply bg-green-500;
+}
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-green-500;
+}
+
+:root {
+    --p-form-field-padding-x: 0.5rem;
+    --p-form-field-padding-y: 0.2rem;
+}
+
+#app {
+    --app-header-height: 4.2rem;
+}

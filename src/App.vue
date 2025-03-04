@@ -5,7 +5,9 @@ import { TopBarMenu } from '@/components/top-bar-menu'
 <template>
     <div class="flex min-h-screen w-full flex-col overflow-hidden dark:bg-gray-900 dark:text-white">
         <TopBarMenu />
-        <main class="flex flex-grow flex-col overflow-auto"></main>
+        <main class="flex flex-grow flex-col overflow-auto">
+            <router-view />
+        </main>
     </div>
 </template>
 
