@@ -9,6 +9,17 @@ export class ServiceProvider {
         throw new Error('Not implemented')
     }
 
+    /**
+     * @returns {string}
+     */
+    get id() {
+        throw new Error('Not implemented')
+    }
+
+    get title() {
+        return this.tab?.title || ''
+    }
+
     constructor(tab, metadata = {}) {
         if (!tab) {
             throw new Error('Tab is required')

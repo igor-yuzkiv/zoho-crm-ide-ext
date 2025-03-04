@@ -1,9 +1,13 @@
-import { ZohoServiceType } from '@/services/service-providers.config.js'
+import { ServiceType } from '@/services'
 import { ServiceProvider } from '@/services/ServiceProvider.js'
 
 export class ZohoCreatorServiceProvider extends ServiceProvider {
     get type() {
-        return ZohoServiceType.zoho_creator
+        return ServiceType.zoho_creator
+    }
+
+    get id() {
+        return `${ServiceType.zoho_creator}-${this.metadata.host}-${this.metadata.owner_name}-${this.metadata.application_name}`
     }
 
     static resolve(tab) {

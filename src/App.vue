@@ -3,7 +3,7 @@ import { TopBarMenu } from '@/components/top-bar-menu'
 </script>
 
 <template>
-    <div class="flex min-h-screen w-full flex-col overflow-hidden dark:bg-gray-900 dark:text-white">
+    <div class="relative flex h-screen w-full min-w-[400px] flex-col overflow-hidden dark:bg-gray-900 dark:text-white">
         <TopBarMenu />
         <main class="flex flex-grow flex-col overflow-auto">
             <router-view />

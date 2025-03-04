@@ -1,9 +1,17 @@
 import { ServiceProvider } from '../ServiceProvider.js'
-import { ZohoServiceType } from '@/services/service-providers.config.js'
+import { ServiceType } from '@/services'
 
 export class ZohoCrmServiceProvider extends ServiceProvider {
     get type() {
-        return ZohoServiceType.zoho_crm
+        return ServiceType.zoho_crm
+    }
+
+    get id() {
+        return `${ServiceType.zoho_crm}-${this.metadata.host}-${this.metadata.org_id}`
+    }
+
+    get title() {
+        return `Zoho CRM (${this.metadata.org_id})`
     }
 
     static resolve(tab) {
