@@ -1,23 +1,16 @@
 <script setup>
-import { useBrowserTabsStore } from '@/store/useBrowserTabsStore.js'
+import { useServiceProvidersStore } from '@/store/useServiceProvidersStore.js'
 import Button from 'primevue/button'
 
-const browserTabs = useBrowserTabsStore()
+const providersStore = useServiceProvidersStore()
 
 async function fetchTabs() {
-    await browserTabs.fetchOpenTabs()
-
-    console.log('tabs', browserTabs.tabs)
-}
-
-async function test() {
-    console.log('zoho_crm', browserTabs.crmTabs)
-    console.log('zoho', browserTabs.zohoTabs)
+    await providersStore.loadProviders()
+    console.log(providersStore.providers)
 }
 </script>
 <template>
     <div class="flex flex-col gap-2">
         <Button @click="fetchTabs">Fetch Tabs</Button>
-        <Button @click="test">Test</Button>
     </div>
 </template>
