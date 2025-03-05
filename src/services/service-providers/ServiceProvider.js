@@ -29,12 +29,31 @@ export class ServiceProvider {
         this.metadata = metadata
     }
 
-    getHost() {
+    //eslint-disable-next-line
+    static resolve(tab) {
         throw new Error('Not implemented')
     }
 
+    /**
+     * @param page
+     * @param per_page
+     * @returns {Promise<{function: Array, has_more: boolean}>}
+     */
     //eslint-disable-next-line
-    static resolve(tab) {
+    async fetchFunctions(page = 1, per_page = 50) {
+        throw new Error('Not implemented')
+    }
+
+    /**
+     * @param item
+     * @returns {Promise<{
+     *      script: string,
+     *      details: Object,
+     *      modified_at: Date
+     * }>}
+     */
+    //eslint-disable-next-line
+    async fetchFunctionDetails(item) {
         throw new Error('Not implemented')
     }
 }

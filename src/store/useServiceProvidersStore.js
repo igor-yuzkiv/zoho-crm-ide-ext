@@ -1,16 +1,24 @@
-import { ZohoCreatorServiceProvider, ZohoCrmServiceProvider } from '@/services/providers'
-import chromeMockUtil from '@/utils/chrome-mock.util.js'
+import { ZohoCreatorServiceProvider, ZohoCrmServiceProvider } from '@/services/service-providers'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { fetchMockChromeTabsQuery } from '@/api/mock.api.js'
 
 const PROVIDERS = [ZohoCrmServiceProvider, ZohoCreatorServiceProvider]
+
+async function fetchChromeTabs() {
+    //TODO: remove mock api
+
+    if (import.meta.env.VITE_MOCK_API === 'true') {
+        return fetchMockChromeTabsQuery()
+    }
+    return chrome.tabs.query({})
+}
 
 export const useServiceProvidersStore = defineStore('browser.tabs', () => {
     const providers = ref([])
 
     async function loadProviders() {
-        const response = await chrome.tabs.query({})
-        // const response = await chromeMockUtil.chromeTabsQuery()
+        const response = await fetchChromeTabs()
 
         if (!response.length) {
             providers.value = []
@@ -22,6 +30,7 @@ export const useServiceProvidersStore = defineStore('browser.tabs', () => {
             for (const serviceProvider of PROVIDERS) {
                 const item = serviceProvider?.resolve?.(tab)
                 if (item && !tmp.has(item.id)) {
+                    tmp.add(item.id)
                     acc.push(item)
                     break
                 }
