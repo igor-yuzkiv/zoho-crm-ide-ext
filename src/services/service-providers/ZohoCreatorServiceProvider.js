@@ -19,6 +19,10 @@ export class ZohoCreatorServiceProvider extends ServiceProvider {
     }
 
     get title() {
+        if (this.metadata?.name) {
+            return this.metadata.name
+        }
+
         return `Zoho Creator (${this.metadata.owner_name}/${this.metadata.application_name})`
     }
 

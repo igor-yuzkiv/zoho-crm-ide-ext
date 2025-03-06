@@ -2,6 +2,7 @@ import { useFunctionsStore } from '@/store/useFunctionsStore.js'
 import { useServiceProvidersStore } from '@/store/useServiceProvidersStore.js'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { useToast } from 'primevue'
 
 /**
  * @return {
@@ -9,6 +10,8 @@ import { computed, ref } from 'vue'
  * }
  */
 export const useWorkspaceStore = defineStore('workspace', () => {
+    const toast = useToast()
+
     const functionsStore = useFunctionsStore()
     const providersStore = useServiceProvidersStore()
 
@@ -27,6 +30,7 @@ export const useWorkspaceStore = defineStore('workspace', () => {
                     : setProvider(providersStore.providers[0].id)
             }
         } catch (e) {
+            toast.add({ summary: 'Failed to load workspace data', severity: 'error' })
             console.error(e)
         } finally {
             isLoading.value = false
@@ -38,27 +42,11 @@ export const useWorkspaceStore = defineStore('workspace', () => {
         functionsStore.loadProviderFunctionsList(provider.value).catch(console.error)
     }
 
-    async function loadFunctionsList(force = false) {
-        if (!provider.value || isLoading.value) {
-            return
-        }
-
-        try {
-            isLoading.value = true
-            await functionsStore.loadProviderFunctionsList(provider.value, force)
-        } catch (e) {
-            console.error(e)
-        } finally {
-            isLoading.value = false
-        }
-    }
-
     return {
         provider,
         functions,
         init,
         setProvider,
-        loadFunctionsList,
         isLoading,
     }
 })

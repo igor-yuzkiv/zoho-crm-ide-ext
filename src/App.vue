@@ -63,6 +63,7 @@ workspace.init()
                 </div>
             </template>
         </TopBarMenu>
+
         <main class="flex flex-grow overflow-hidden">
             <div class="flex h-full flex-col overflow-y-auto overflow-x-hidden border-r" style="width: 400px">
                 <FunctionsExplorer :functions="workspace.functions" />
@@ -71,6 +72,7 @@ workspace.init()
                 <router-view />
             </div>
         </main>
+
         <BottomBar />
     </div>
 </template>
