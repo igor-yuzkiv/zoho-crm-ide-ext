@@ -23,4 +23,8 @@ export default {
 
         return item.value
     },
+
+    removeItem(key) {
+        localStorage.removeItem(key)
+    },
 }

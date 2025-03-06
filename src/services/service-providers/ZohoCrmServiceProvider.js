@@ -1,4 +1,5 @@
 import { ServiceProvider } from './ServiceProvider.js'
+import { parse } from 'date-fns'
 import { snakeCase } from 'lodash'
 import { FunctionType, ServiceProviderType } from '@/config/index.js'
 import { fetchCrmFunctions, fetchFunctionDetails } from '@/api/zoho-crm.api.js'
@@ -17,7 +18,7 @@ function formatCrmFunctionApiName(api_name, display_name) {
 }
 
 function normalizeCrmFunctionData(item) {
-    const { id, api_name, category, display_name, script, ...metadata } = item
+    const { id, api_name, category, display_name, script, updatedTime, ...metadata } = item
 
     return {
         id,
@@ -25,6 +26,7 @@ function normalizeCrmFunctionData(item) {
         api_name: formatCrmFunctionApiName(api_name, display_name),
         display_name,
         metadata,
+        updated_time: Number.isInteger(updatedTime) ? updatedTime : null,
         script,
     }
 }
@@ -104,6 +106,15 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
             language: metadata.language || 'deluge',
         })
 
-        return response ? normalizeCrmFunctionData(response) : item
+        const normalized = normalizeCrmFunctionData(response)
+        if (!normalized) {
+            return item
+        }
+
+        if (!normalized?.updated_time) {
+            normalized.updated_time = item?.updated_time || null
+        }
+
+        return normalized
     }
 }

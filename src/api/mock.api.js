@@ -18,7 +18,7 @@ export async function fetchMockCrmFunctions(start = 0, limit = 100) {
 }
 
 export async function fetchMockCrmFunctionDetails(id) {
-    const data = await import('@/data/crm_functions_list.json')
+    const data = await import('@/data/crm_functions_details.json')
 
     return new Promise((resolve) => {
         setTimeout(() => {

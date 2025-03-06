@@ -1,4 +1,5 @@
 <script setup>
+import { useFunctionsStore } from '@/store/useFunctionsStore.js'
 import { useServiceProvidersStore } from '@/store/useServiceProvidersStore.js'
 import { useWorkspaceStore } from '@/store/useWorkspaceStore.js'
 import { computed } from 'vue'
@@ -10,6 +11,7 @@ import { FunctionsExplorer } from '@/components/functions-explorer/index.js'
 import { TopBarMenu } from '@/components/top-bar-menu'
 
 const providersStore = useServiceProvidersStore()
+const functionsStore = useFunctionsStore()
 const workspace = useWorkspaceStore()
 
 const providersOptions = computed(() => {
@@ -43,6 +45,7 @@ workspace.init()
                         option-label="label"
                         option-value="value"
                         placeholder="-- Service Provider --"
+                        :disabled="workspace.isLoading || functionsStore.isLoading"
                     >
                         <template #value>
                             <div class="flex items-center gap-x-1" v-if="workspace.provider">
@@ -59,7 +62,12 @@ workspace.init()
                             </div>
                         </template>
                     </Select>
-                    <Button text icon="pi pi-sync" @click="providersStore.loadProviders()" />
+                    <Button
+                        text
+                        icon="pi pi-sync"
+                        @click="providersStore.loadProviders()"
+                        :disabled="workspace.isLoading || functionsStore.isLoading"
+                    />
                 </div>
             </template>
         </TopBarMenu>

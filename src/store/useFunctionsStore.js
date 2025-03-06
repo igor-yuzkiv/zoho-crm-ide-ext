@@ -1,27 +1,12 @@
 import localStorageUtil from '@/utils/local-storage.util.js'
+import { chunk } from 'lodash'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { CACHE_TTL } from '@/config/index.js'
 
 export const useFunctionsStore = defineStore('functions', () => {
     const functionPerProvider = ref({})
-
-    function setFunctions(providerId, data) {
-        if (!providerId || !data.length) {
-            return
-        }
-
-        functionPerProvider.value[providerId] = data
-        cacheFunctions(providerId, data)
-    }
-
-    function hasFunctions(providerId) {
-        return functionPerProvider.value[providerId]?.length > 0
-    }
-
-    function getFunctions(providerId) {
-        return functionPerProvider.value[providerId] || []
-    }
+    const isLoading = ref(false)
 
     function cacheFunctions(providerId, items) {
         if (!providerId || !items.length) {
@@ -36,43 +21,130 @@ export const useFunctionsStore = defineStore('functions', () => {
         return cached ? JSON.parse(cached) : []
     }
 
-    async function loadProviderFunctionsList(provider, force = false) {
-        const cached = getCachedFunctions(provider.id)
-        if (cached.length && !force) {
-            setFunctions(provider.id, cached)
+    function clearCache(providerId) {
+        localStorageUtil.removeItem(`functions:${providerId}`)
+        functionPerProvider.value[providerId] = []
+    }
+
+    function hasFunctions(providerId) {
+        return functionPerProvider.value[providerId]?.length > 0
+    }
+
+    function getFunctions(providerId) {
+        return functionPerProvider.value[providerId] || []
+    }
+
+    function setFunctions(providerId, data, removeIfNotPresent = false) {
+        if (!providerId || !data.length) {
             return
         }
 
-        if (!provider.isConnected) {
-            console.warn('functionsStore.load: provider is not connected', provider)
+        const updatedFunctions = new Map(getFunctions(providerId).map((item) => [item.id, item]))
+        const newFunctionsIds = new Set(data.map((item) => item.id))
+
+        for (const item of data) {
+            updatedFunctions.set(item.id, { ...updatedFunctions.get(item.id), ...item })
+        }
+
+        functionPerProvider.value[providerId] = removeIfNotPresent
+            ? [...updatedFunctions.values()].filter((item) => newFunctionsIds.has(item.id))
+            : [...updatedFunctions.values()]
+
+        cacheFunctions(providerId, functionPerProvider.value[providerId])
+    }
+
+    async function fetchFunctionsList(provider) {
+        let page = 1
+        let has_mode = false
+        const functions = []
+        do {
+            const response = await provider.fetchFunctions(page)
+            if (response.functions.length) {
+                functions.push(...response.functions)
+            }
+
+            has_mode = response.has_more
+            page++
+        } while (has_mode)
+
+        return functions
+    }
+
+    async function loadFunctionsDetailsChunk(provider, chunk) {
+        const data = []
+
+        for (const item of chunk) {
+            const response = await provider.fetchFunctionDetails(item)
+            if (response) {
+                data.push(response)
+            }
+        }
+
+        return data
+    }
+
+    async function loadFunctions(provider, force = false) {
+        if (!provider?.id || isLoading.value) {
             return
         }
 
         try {
-            let page = 1
-            let has_mode = false
-            const functions = []
-            do {
-                const response = await provider.fetchFunctions(page)
-                if (response.functions.length) {
-                    functions.push(...response.functions)
-                }
+            isLoading.value = true
+            functionPerProvider.value[provider.id] = getCachedFunctions(provider.id)
 
-                has_mode = response.has_more
-                page++
-            } while (has_mode)
+            if (!hasFunctions(provider.id) || force) {
+                setFunctions(provider.id, await fetchFunctionsList(provider), true)
+            }
 
-            setFunctions(provider.id, functions)
+            const functions = getFunctions(provider.id)
+
+            setFunctions(provider.id, functions, force)
+            const forSync = functions.filter((item) => !item?.last_sync_at || item.updated_time !== item.last_sync_at)
+
+            if (!forSync.length) {
+                isLoading.value = false
+                return
+            }
+
+            const promises = chunk(forSync, 10).map((c) => loadFunctionsDetailsChunk(provider, c))
+
+            await Promise.all(promises)
+                .then((response) => {
+                    setFunctions(
+                        provider.id,
+                        response.flat().map((item) => ({ ...item, last_sync_at: item.updated_time || null }))
+                    )
+                })
+                .finally(() => {
+                    isLoading.value = false
+                })
         } catch (e) {
-            console.error(e)
+            console.error('Failed to load functions', e)
+            isLoading.value = false
+        }
+    }
+
+    async function refreshFunction(provider, functionId) {
+        try {
+            isLoading.value = true
+            const response = await provider.fetchFunctionDetails(functionId)
+            if (response) {
+                setFunctions(provider.id, [response], true)
+            }
+        } catch (e) {
+            console.error('Failed to refresh function', e)
+        } finally {
+            isLoading.value = false
         }
     }
 
     return {
+        isLoading,
         functionPerProvider,
-        setFunctions,
         getFunctions,
         hasFunctions,
-        loadProviderFunctionsList,
+        loadFunctions,
+        clearCache,
+        refreshFunction,
     }
 })

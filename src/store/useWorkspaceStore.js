@@ -39,7 +39,7 @@ export const useWorkspaceStore = defineStore('workspace', () => {
 
     function setProvider(providerId) {
         currentProviderId.value = providerId
-        functionsStore.loadProviderFunctionsList(provider.value).catch(console.error)
+        functionsStore.loadFunctions(provider.value).catch(console.error)
     }
 
     return {
