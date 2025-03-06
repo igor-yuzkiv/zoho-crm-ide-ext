@@ -1,46 +1,102 @@
-import { ZohoCreatorServiceProvider, ZohoCrmServiceProvider } from '@/services/service-providers'
+import { ZohoCreatorServiceProvider, ZohoCrmServiceProvider } from '@/services/service-providers/index.js'
+import localStorageUtil from '@/utils/local-storage.util.js'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { ServiceProviderType } from '@/config/index.js'
 import { fetchMockChromeTabsQuery } from '@/api/mock.api.js'
 
-const PROVIDERS = [ZohoCrmServiceProvider, ZohoCreatorServiceProvider]
+const PROVIDERS = {
+    [ServiceProviderType.zoho_crm]: ZohoCrmServiceProvider,
+    [ServiceProviderType.zoho_creator]: ZohoCreatorServiceProvider,
+}
 
-async function fetchChromeTabs() {
+async function fetchBrowserTabs() {
     //TODO: remove mock api
-
     if (import.meta.env.VITE_MOCK_API === 'true') {
         return fetchMockChromeTabsQuery()
     }
     return chrome.tabs.query({})
 }
 
+function resolveProviderFromBrowserTab(tab) {
+    for (const serviceProvider of Object.values(PROVIDERS)) {
+        const provider = serviceProvider?.resolveFromBrowserTab?.(tab)
+        if (provider) {
+            return provider
+        }
+    }
+}
+
 export const useServiceProvidersStore = defineStore('browser.tabs', () => {
-    const providers = ref([])
+    const providersMap = ref({})
+    const providers = computed(() => Object.values(providersMap.value))
+    const connected = computed(() => providers.value.filter((p) => p.isConnected))
 
-    async function loadProviders() {
-        const response = await fetchChromeTabs()
+    function cacheProviders() {
+        localStorageUtil.setItem(
+            'service-providers',
+            providers.value.map((provider) => ({ type: provider.type, metadata: provider.metadata }))
+        )
+    }
 
-        if (!response.length) {
-            providers.value = []
+    function loadCachedProviders() {
+        const items = localStorageUtil.getItem('service-providers')
+        if (!Array.isArray(items) || !items.length) {
             return
         }
 
-        const tmp = new Set()
-        providers.value = response.reduce((acc, tab) => {
-            for (const serviceProvider of PROVIDERS) {
-                const item = serviceProvider?.resolveFromBrowserTab?.(tab)
-                if (item && !(tmp.has(item.id) && item.isConnected)) {
-                    tmp.add(item.id)
-                    acc.push(item)
-                    break
-                }
+        for (const item of items) {
+            const provider = new PROVIDERS[item.type](item.metadata)
+            if (provider.id && !providersMap.value[provider.id]) {
+                providersMap.value[provider.id] = provider
             }
-            return acc
-        }, [])
+        }
     }
+
+    async function fetchProvidersFromBrowser() {
+        const response = await fetchBrowserTabs()
+        if (!Array.isArray(response)) {
+            return
+        }
+
+        const newProviders = response.reduce((acc, item) => {
+            const provider = resolveProviderFromBrowserTab(item)
+            if (!provider?.id || acc[provider?.id]) {
+                return acc
+            }
+
+            acc[provider.id] = provider
+            return acc
+        }, {})
+
+        Object.keys(providersMap.value).forEach((key) => {
+            if (!newProviders[key]) {
+                providersMap.value[key].disconnect()
+            }
+        })
+
+        Object.assign(providersMap.value, newProviders)
+        cacheProviders()
+    }
+
+    async function loadProviders() {
+        loadCachedProviders()
+        await fetchProvidersFromBrowser()
+    }
+
+    onMounted(() => {
+        if (import.meta.env.VITE_MOCK_API === 'true') {
+            return
+        }
+
+        chrome.tabs.onUpdated.addListener(fetchProvidersFromBrowser)
+        chrome.tabs.onRemoved.addListener(fetchProvidersFromBrowser)
+    })
 
     return {
         providers,
+        providersMap,
+        connected,
         loadProviders,
     }
 })

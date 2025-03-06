@@ -20,13 +20,13 @@
     height: 7px;
 }
 ::-webkit-scrollbar-track {
-    @apply bg-gray-400;
+    @apply bg-gray-200;
 }
 ::-webkit-scrollbar-thumb {
-    @apply bg-gray-800;
+    @apply bg-gray-600;
 }
 ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-800;
+    @apply bg-gray-600;
 }
 
 :root {

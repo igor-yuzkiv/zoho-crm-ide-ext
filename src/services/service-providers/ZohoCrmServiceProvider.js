@@ -6,7 +6,7 @@ import { fetchCrmFunctions, fetchFunctionDetails } from '@/api/zoho-crm.api.js'
 const REGULAR_REGEX = /^(https:\/\/crm\.zoho\.[a-z]{2,})\/crm\/org(\d+)\//
 const SANDBOX_REGEX = /^(https:\/\/crmsandbox\.zoho\.[a-z]{2,})\/crm\/(\w+)\//
 
-function normalizeCrmFunctionApiName(api_name, display_name) {
+function formatCrmFunctionApiName(api_name, display_name) {
     api_name = typeof api_name === 'string' && api_name !== 'null' ? api_name.trim() : null
 
     if (!api_name && typeof display_name === 'string') {
@@ -22,7 +22,7 @@ function normalizeCrmFunctionData(item) {
     return {
         id,
         type: FunctionType[category] || FunctionType.unknown,
-        api_name: normalizeCrmFunctionApiName(api_name, display_name),
+        api_name: formatCrmFunctionApiName(api_name, display_name),
         display_name,
         metadata,
         script,
@@ -30,6 +30,14 @@ function normalizeCrmFunctionData(item) {
 }
 
 export class ZohoCrmServiceProvider extends ServiceProvider {
+    constructor(metadata, tab) {
+        if (!metadata?.org_id) {
+            throw new Error('Invalid Zoho CRM metadata')
+        }
+
+        super(metadata, tab)
+    }
+
     get type() {
         return ServiceProviderType.zoho_crm
     }

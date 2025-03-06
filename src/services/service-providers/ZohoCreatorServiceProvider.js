@@ -2,6 +2,14 @@ import { ServiceProvider } from '@/services/service-providers/ServiceProvider.js
 import { ServiceProviderType } from '@/config/index.js'
 
 export class ZohoCreatorServiceProvider extends ServiceProvider {
+    constructor(metadata, tab) {
+        if (!metadata?.owner_name || !metadata?.application_name) {
+            throw new Error('Invalid Zoho Creator metadata')
+        }
+
+        super(metadata, tab)
+    }
+
     get type() {
         return ServiceProviderType.zoho_creator
     }

@@ -4,40 +4,30 @@ import { useWorkspaceStore } from '@/store/useWorkspaceStore.js'
 import { computed } from 'vue'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
+import { Icon } from '@iconify/vue'
 import { BottomBar } from '@/components/bottom-bar/index.js'
 import { FunctionsExplorer } from '@/components/functions-explorer/index.js'
 import { TopBarMenu } from '@/components/top-bar-menu'
 
-const workspace = useWorkspaceStore()
 const providersStore = useServiceProvidersStore()
+const workspace = useWorkspaceStore()
 
 const providersOptions = computed(() => {
-    if (!providersStore.providers?.length) {
-        return []
-    }
-
-    return providersStore.providers.map((item) => ({ label: item.title, value: item.id }))
+    return providersStore.providers.map((item) => ({
+        label: item.title,
+        value: item.id,
+        isConnected: item.isConnected,
+    }))
 })
 
 function onSelectProvider(event) {
     const provider = providersStore.providers.find((item) => item.id === event)
     if (provider) {
-        workspace.setServiceProvider(provider)
+        workspace.setProvider(provider.id)
     }
 }
 
-async function loadProviders() {
-    try {
-        await providersStore.loadProviders()
-        if (!workspace.serviceProvider && providersStore.providers.length) {
-            workspace.setServiceProvider(providersStore.providers[0])
-        }
-    } catch (e) {
-        console.error(e)
-    }
-}
-
-loadProviders()
+workspace.init()
 </script>
 
 <template>
@@ -47,14 +37,29 @@ loadProviders()
                 <div class="flex items-center gap-x-1">
                     <Select
                         :options="providersOptions"
-                        :model-value="workspace.serviceProvider?.id"
+                        :model-value="workspace.provider?.id"
                         @update:model-value="onSelectProvider"
                         class="min-w-[200px]"
                         option-label="label"
                         option-value="value"
                         placeholder="-- Service Provider --"
-                    />
-                    <Button text icon="pi pi-sync" @click="loadProviders" />
+                    >
+                        <template #value>
+                            <div class="flex items-center gap-x-1" v-if="workspace.provider">
+                                <Icon
+                                    :icon="workspace.provider?.isConnected ? 'pajamas:connected' : 'hugeicons:connect'"
+                                />
+                                {{ workspace.provider?.title }}
+                            </div>
+                        </template>
+                        <template #option="{ option }">
+                            <div class="flex items-center gap-x-1" :class="{ 'text-gray-500': !option.isConnected }">
+                                <Icon :icon="option?.isConnected ? 'pajamas:connected' : 'hugeicons:connect'" />
+                                {{ option.label }}
+                            </div>
+                        </template>
+                    </Select>
+                    <Button text icon="pi pi-sync" @click="providersStore.loadProviders()" />
                 </div>
             </template>
         </TopBarMenu>

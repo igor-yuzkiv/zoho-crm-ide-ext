@@ -1,6 +1,7 @@
 import { useFunctionsStore } from '@/store/useFunctionsStore.js'
+import { useServiceProvidersStore } from '@/store/useServiceProvidersStore.js'
 import { defineStore } from 'pinia'
-import { computed, ref, shallowRef } from 'vue'
+import { computed, ref } from 'vue'
 
 /**
  * @return {
@@ -8,40 +9,43 @@ import { computed, ref, shallowRef } from 'vue'
  * }
  */
 export const useWorkspaceStore = defineStore('workspace', () => {
-    const serviceProvider = shallowRef()
     const functionsStore = useFunctionsStore()
-    const functions = computed(() => functionsStore.getFunctions(serviceProvider.value?.id))
-    const isLoading = ref(false)
+    const providersStore = useServiceProvidersStore()
 
-    function setServiceProvider(provider) {
-        serviceProvider.value = provider
+    const isLoading = ref(false)
+    const currentProviderId = ref()
+    const provider = computed(() => providersStore.providersMap[currentProviderId.value])
+    const functions = computed(() => functionsStore.getFunctions(currentProviderId.value))
+
+    async function init() {
+        try {
+            isLoading.value = true
+            await providersStore.loadProviders()
+            if (!provider.value && providersStore.providers.length) {
+                providersStore.connected?.length
+                    ? setProvider(providersStore.connected[0].id)
+                    : setProvider(providersStore.providers[0].id)
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            isLoading.value = false
+        }
     }
 
-    async function loadFunctions() {
-        if (!serviceProvider.value || isLoading.value) {
-            return
-        }
+    function setProvider(providerId) {
+        currentProviderId.value = providerId
+        functionsStore.loadProviderFunctionsList(provider.value).catch(console.error)
+    }
 
-        if (functionsStore.hasFunctions(serviceProvider.value.id)) {
+    async function loadFunctionsList(force = false) {
+        if (!provider.value || isLoading.value) {
             return
         }
 
         try {
             isLoading.value = true
-            let page = 1
-            let has_mode = false
-            const functions = []
-            do {
-                const response = await serviceProvider.value.fetchFunctions(page)
-                if (response.functions.length) {
-                    functions.push(...response.functions)
-                }
-
-                has_mode = response.has_more
-                page++
-            } while (has_mode)
-
-            functionsStore.setFunctions(serviceProvider.value.id, functions)
+            await functionsStore.loadProviderFunctionsList(provider.value, force)
         } catch (e) {
             console.error(e)
         } finally {
@@ -50,9 +54,11 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     }
 
     return {
-        serviceProvider,
-        setServiceProvider,
-        loadFunctions,
+        provider,
         functions,
+        init,
+        setProvider,
+        loadFunctionsList,
+        isLoading,
     }
 })

@@ -1,14 +1,13 @@
 export class ServiceProvider {
     tab = null
     metadata = {}
+    isConnected = false
 
     constructor(metadata, tab) {
         this.metadata = metadata
         this.tab = tab
-    }
 
-    get isConnected() {
-        return Boolean(this.tab?.id)
+        this.isConnected = Boolean(tab?.id)
     }
 
     /**
@@ -27,6 +26,11 @@ export class ServiceProvider {
 
     get title() {
         return this.tab?.title || ''
+    }
+
+    disconnect() {
+        this.tab = null
+        this.isConnected = false
     }
 
     /**
