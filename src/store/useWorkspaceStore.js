@@ -25,9 +25,13 @@ export const useWorkspaceStore = defineStore('workspace', () => {
             isLoading.value = true
             await providersStore.loadProviders()
             if (!provider.value && providersStore.providers.length) {
-                providersStore.connected?.length
-                    ? setProvider(providersStore.connected[0].id)
-                    : setProvider(providersStore.providers[0].id)
+                currentProviderId.value = providersStore.connected?.length
+                    ? providersStore.connected[0].id
+                    : providersStore.providers[0].id
+
+                if (currentProviderId.value) {
+                    functionsStore.loadFunctions(provider.value, true).catch(console.error)
+                }
             }
         } catch (e) {
             toast.add({ summary: 'Failed to load workspace data', severity: 'error' })
