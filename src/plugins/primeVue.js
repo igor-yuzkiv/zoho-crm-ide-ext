@@ -9,7 +9,7 @@ export default function (app) {
         theme: {
             preset: Aura,
             options: {
-                darkMode: true,
+                darkModeSelector: '.dark-mode',
                 cssLayer: {
                     name: 'primevue',
                     order: 'tailwind-base, primevue, tailwind-utilities',

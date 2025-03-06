@@ -1,0 +1,40 @@
+export const ServiceProviderType = {
+    zoho_crm: 'zoho_crm',
+    zoho_creator: 'zoho_creator',
+}
+
+export const FunctionType = {
+    button: 'button',
+    standalone: 'standalone',
+    dynamic: 'dynamic',
+    automation: 'automation',
+    scheduler: 'scheduler',
+    unknown: 'unknown',
+}
+
+export const FunctionTypeMeta = {
+    [FunctionType.button]: {
+        icon: 'mdi:button-pointer',
+        color: '#5681ff',
+    },
+    [FunctionType.standalone]: {
+        icon: 'ph:code-fill',
+        color: '#3ea944',
+    },
+    [FunctionType.dynamic]: {
+        icon: 'material-symbols:extension',
+        color: '#d33bf1',
+    },
+    [FunctionType.automation]: {
+        icon: 'mdi:workflow',
+        color: '#5681ff',
+    },
+    [FunctionType.scheduler]: {
+        icon: 'mingcute:time-fill',
+        color: '#f6a800',
+    },
+    [FunctionType.unknown]: {
+        icon: 'f7:question',
+        color: '#919191',
+    },
+}

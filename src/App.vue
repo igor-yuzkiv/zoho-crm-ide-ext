@@ -4,6 +4,8 @@ import { useWorkspaceStore } from '@/store/useWorkspaceStore.js'
 import { computed } from 'vue'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
+import { BottomBar } from '@/components/bottom-bar/index.js'
+import { FunctionsExplorer } from '@/components/functions-explorer/index.js'
 import { TopBarMenu } from '@/components/top-bar-menu'
 
 const workspace = useWorkspaceStore()
@@ -56,9 +58,15 @@ loadProviders()
                 </div>
             </template>
         </TopBarMenu>
-        <main class="flex flex-grow flex-col overflow-auto">
-            <router-view />
+        <main class="flex flex-grow overflow-hidden">
+            <div class="flex h-full flex-col overflow-y-auto overflow-x-hidden border-r" style="width: 400px">
+                <FunctionsExplorer :functions="workspace.functions" />
+            </div>
+            <div class="flex h-full w-full flex-col overflow-auto">
+                <router-view />
+            </div>
         </main>
+        <BottomBar />
     </div>
 </template>
 

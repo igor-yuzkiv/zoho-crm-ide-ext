@@ -1,13 +1,38 @@
 import { ServiceProvider } from './ServiceProvider.js'
-import { ServiceType } from '@/constants/service-provers.constants.js'
+import { snakeCase } from 'lodash'
+import { FunctionType, ServiceProviderType } from '@/config/index.js'
 import { fetchCrmFunctions } from '@/api/zoho-crm.api.js'
 
 const REGULAR_REGEX = /^(https:\/\/crm\.zoho\.[a-z]{2,})\/crm\/org(\d+)\//
 const SANDBOX_REGEX = /^(https:\/\/crmsandbox\.zoho\.[a-z]{2,})\/crm\/(\w+)\//
 
+function normalizeCrmFunctionApiName(api_name, display_name) {
+    api_name = typeof api_name === 'string' && api_name !== 'null' ? api_name.trim() : null
+
+    if (!api_name && typeof display_name === 'string') {
+        api_name = snakeCase(display_name.trim())
+    }
+
+    return api_name || 'unknown_function'
+}
+
+function normalizeCrmFunctionData(item) {
+    const { id, api_name, category, display_name, updatedTime, ...metadata } = item
+
+    return {
+        id,
+        api_name: normalizeCrmFunctionApiName(api_name, display_name),
+        type: FunctionType[category] || FunctionType.unknown,
+        category: category,
+        display_name,
+        updated_at: updatedTime ? new Date(updatedTime) : Date.now(),
+        metadata,
+    }
+}
+
 export class ZohoCrmServiceProvider extends ServiceProvider {
     get type() {
-        return ServiceType.zoho_crm
+        return ServiceProviderType.zoho_crm
     }
 
     get id() {
@@ -46,8 +71,9 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
         let start = page <= 1 ? 0 : (page - 1) * per_page + 1
 
         const response = (await fetchCrmFunctions(this.tab.id, start, per_page)) || []
+
         return {
-            functions: response || [],
+            functions: response.length ? response.map(normalizeCrmFunctionData) : [],
             has_more: response.length >= per_page,
         }
     }
@@ -57,11 +83,10 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
      * @returns {Promise<{script: string, details: Object, modified_at: Date}>}
      */
     async fetchFunctionDetails(item) {
-        console.log('ZohoCrmServiceProvider.fetchFunctionDetails not implemented', { tabId, item })
+        console.log('ZohoCrmServiceProvider.fetchFunctionDetails not implemented', { item })
         return {
             script: '',
             details: {},
-            modified_at: new Date(),
         }
     }
 }
