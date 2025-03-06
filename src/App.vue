@@ -3,6 +3,7 @@ import { useFunctionsStore } from '@/store/useFunctionsStore.js'
 import { useServiceProvidersStore } from '@/store/useServiceProvidersStore.js'
 import { useWorkspaceStore } from '@/store/useWorkspaceStore.js'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
 import { Icon } from '@iconify/vue'
@@ -13,6 +14,7 @@ import { TopBarMenu } from '@/components/top-bar-menu'
 const providersStore = useServiceProvidersStore()
 const functionsStore = useFunctionsStore()
 const workspace = useWorkspaceStore()
+const router = useRouter()
 
 const providersOptions = computed(() => {
     return providersStore.providers.map((item) => ({
@@ -27,6 +29,10 @@ function onSelectProvider(event) {
     if (provider) {
         workspace.setProvider(provider.id)
     }
+}
+
+function onClickExplorerItem(item) {
+    router.push({ name: 'function.details.script', params: { id: item.id } })
 }
 
 workspace.init()
@@ -74,7 +80,7 @@ workspace.init()
 
         <main class="flex flex-grow overflow-hidden">
             <div class="flex h-full flex-col overflow-y-auto overflow-x-hidden border-r" style="width: 400px">
-                <FunctionsExplorer :functions="workspace.functions" />
+                <FunctionsExplorer :functions="workspace.functions" @click="onClickExplorerItem" />
             </div>
             <div class="flex h-full w-full flex-col overflow-auto">
                 <router-view />
