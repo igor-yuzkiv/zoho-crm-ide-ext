@@ -41,17 +41,4 @@ export class ZohoCreatorServiceProvider extends ServiceProvider {
             has_more: false,
         }
     }
-
-    /**
-     * @param item
-     * @returns {Promise<{script: string, details: Object, modified_at: Date}>}
-     */
-    async fetchFunctionDetails(item) {
-        console.warn('ZohoCreatorServiceProvider.fetchFunctionDetails not implemented', { item })
-        return {
-            script: '',
-            details: {},
-            modified_at: new Date(),
-        }
-    }
 }

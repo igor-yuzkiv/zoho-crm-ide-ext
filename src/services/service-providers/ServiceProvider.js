@@ -46,14 +46,13 @@ export class ServiceProvider {
 
     /**
      * @param item
-     * @returns {Promise<{
-     *      script: string,
-     *      details: Object,
-     *      modified_at: Date
-     * }>}
+     * @returns {Promise<Object>}
      */
-    //eslint-disable-next-line
     async fetchFunctionDetails(item) {
-        throw new Error('Not implemented')
+        console.warn('ServiceProvider.fetchFunctionDetails not implemented', {
+            type: this.type,
+            item,
+        })
+        return item
     }
 }

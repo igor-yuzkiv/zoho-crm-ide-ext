@@ -1,7 +1,7 @@
 import { ServiceProvider } from './ServiceProvider.js'
 import { snakeCase } from 'lodash'
 import { FunctionType, ServiceProviderType } from '@/config/index.js'
-import { fetchCrmFunctions } from '@/api/zoho-crm.api.js'
+import { fetchCrmFunctions, fetchFunctionDetails } from '@/api/zoho-crm.api.js'
 
 const REGULAR_REGEX = /^(https:\/\/crm\.zoho\.[a-z]{2,})\/crm\/org(\d+)\//
 const SANDBOX_REGEX = /^(https:\/\/crmsandbox\.zoho\.[a-z]{2,})\/crm\/(\w+)\//
@@ -17,16 +17,15 @@ function normalizeCrmFunctionApiName(api_name, display_name) {
 }
 
 function normalizeCrmFunctionData(item) {
-    const { id, api_name, category, display_name, updatedTime, ...metadata } = item
+    const { id, api_name, category, display_name, script, ...metadata } = item
 
     return {
         id,
-        api_name: normalizeCrmFunctionApiName(api_name, display_name),
         type: FunctionType[category] || FunctionType.unknown,
-        category: category,
+        api_name: normalizeCrmFunctionApiName(api_name, display_name),
         display_name,
-        updated_at: updatedTime ? new Date(updatedTime) : Date.now(),
         metadata,
+        script,
     }
 }
 
@@ -80,13 +79,20 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
 
     /**
      * @param item
-     * @returns {Promise<{script: string, details: Object, modified_at: Date}>}
+     * @returns {Promise<Object>}
      */
     async fetchFunctionDetails(item) {
-        console.log('ZohoCrmServiceProvider.fetchFunctionDetails not implemented', { item })
-        return {
-            script: '',
-            details: {},
+        const { id, metadata } = item
+        if (!id) {
+            return item
         }
+
+        const response = await fetchFunctionDetails(this.tab.id, id, {
+            category: metadata.category || 'automation',
+            source: metadata.source || 'crm',
+            language: metadata.language || 'deluge',
+        })
+
+        return response ? normalizeCrmFunctionData(response) : item
     }
 }
