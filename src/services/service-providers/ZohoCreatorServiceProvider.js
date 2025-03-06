@@ -14,19 +14,19 @@ export class ZohoCreatorServiceProvider extends ServiceProvider {
         return `Zoho Creator (${this.metadata.owner_name}/${this.metadata.application_name})`
     }
 
-    static resolve(tab) {
+    static resolveFromBrowserTab(tab) {
         if (!tab?.url) {
             return
         }
 
-        const match = tab.url.match(/^(https:\/\/creator\.zoho\.[a-z]{2,})\/appbuilder\/([^\/]+)\/([^\/]+)\//)
+        const match = tab.url.match(/^(https:\/\/creator\.zoho\.[a-z]{2,})\/appbuilder\/([^/]+)\/([^/]+)\//)
         if (!match || match?.length !== 4) {
             return
         }
 
         const [, host, owner_name, application_name] = match
 
-        return new ZohoCreatorServiceProvider(tab, { host, owner_name, application_name })
+        return new ZohoCreatorServiceProvider({ host, owner_name, application_name }, tab)
     }
 
     /**

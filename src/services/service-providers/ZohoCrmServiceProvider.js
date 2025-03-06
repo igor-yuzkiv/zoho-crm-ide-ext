@@ -42,7 +42,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
         return `Zoho CRM ${this.metadata.is_sandbox ? 'Sandbox' : ''} (${this.metadata.org_id})`
     }
 
-    static resolve(tab) {
+    static resolveFromBrowserTab(tab) {
         if (!tab?.url) {
             return
         }
@@ -57,7 +57,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
 
         if (match && match?.length === 3) {
             const [, host, org_id] = match
-            return new ZohoCrmServiceProvider(tab, { host, org_id, is_sandbox })
+            return new ZohoCrmServiceProvider({ host, org_id, is_sandbox }, tab)
         }
     }
 

@@ -28,8 +28,8 @@ export const useServiceProvidersStore = defineStore('browser.tabs', () => {
         const tmp = new Set()
         providers.value = response.reduce((acc, tab) => {
             for (const serviceProvider of PROVIDERS) {
-                const item = serviceProvider?.resolve?.(tab)
-                if (item && !tmp.has(item.id)) {
+                const item = serviceProvider?.resolveFromBrowserTab?.(tab)
+                if (item && !(tmp.has(item.id) && item.isConnected)) {
                     tmp.add(item.id)
                     acc.push(item)
                     break

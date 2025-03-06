@@ -2,6 +2,15 @@ export class ServiceProvider {
     tab = null
     metadata = {}
 
+    constructor(metadata, tab) {
+        this.metadata = metadata
+        this.tab = tab
+    }
+
+    get isConnected() {
+        return Boolean(this.tab?.id)
+    }
+
     /**
      * @returns {string}
      */
@@ -20,17 +29,11 @@ export class ServiceProvider {
         return this.tab?.title || ''
     }
 
-    constructor(tab, metadata = {}) {
-        if (!tab) {
-            throw new Error('Tab is required')
-        }
-
-        this.tab = tab
-        this.metadata = metadata
-    }
-
+    /**
+     * @return ServiceProvider
+     */
     //eslint-disable-next-line
-    static resolve(tab) {
+    static resolveFromBrowserTab(tab) {
         throw new Error('Not implemented')
     }
 
