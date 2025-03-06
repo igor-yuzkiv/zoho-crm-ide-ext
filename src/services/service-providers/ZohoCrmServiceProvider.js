@@ -47,7 +47,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
     }
 
     get title() {
-        return `Zoho CRM ${this.metadata.is_sandbox ? 'Sandbox' : ''} (${this.metadata.org_id})`
+        return `${this.metadata.org_id} - CRM ${this.metadata.is_sandbox ? 'Sandbox' : ''}`
     }
 
     static resolveFromBrowserTab(tab) {
