@@ -1,6 +1,6 @@
 import { ServiceProvider } from './ServiceProvider.js'
 import { snakeCase } from 'lodash'
-import { FunctionType, ServiceProviderType } from '@/config/index.js'
+import { FunctionType, ServiceProviderType } from '@/config.js'
 import { fetchCrmFunctions, fetchFunctionDetails } from '@/api/zoho-crm.api.js'
 
 const REGULAR_REGEX = /^(https:\/\/crm\.zoho\.[a-z]{2,})\/crm\/org(\d+)\//

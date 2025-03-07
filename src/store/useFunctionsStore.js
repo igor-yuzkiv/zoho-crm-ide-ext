@@ -1,8 +1,8 @@
+import { CACHE_TTL } from '@/config.js'
 import localStorageUtil from '@/utils/local-storage.util.js'
 import { chunk } from 'lodash'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { CACHE_TTL } from '@/config/index.js'
 
 export const useFunctionsStore = defineStore('functions', () => {
     const functionPerProvider = ref({})

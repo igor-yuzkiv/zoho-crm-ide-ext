@@ -2,7 +2,7 @@ import { ZohoCreatorServiceProvider, ZohoCrmServiceProvider } from '@/services/s
 import localStorageUtil from '@/utils/local-storage.util.js'
 import { defineStore } from 'pinia'
 import { computed, onMounted, ref } from 'vue'
-import { ServiceProviderType } from '@/config/index.js'
+import { ServiceProviderType } from '@/config.js'
 import { fetchMockChromeTabsQuery } from '@/api/mock.api.js'
 
 const PROVIDERS = {

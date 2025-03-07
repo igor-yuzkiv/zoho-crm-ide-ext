@@ -1,5 +1,5 @@
 import { ServiceProvider } from '@/services/service-providers/ServiceProvider.js'
-import { ServiceProviderType } from '@/config/index.js'
+import { ServiceProviderType } from '@/config.js'
 
 export class ZohoCreatorServiceProvider extends ServiceProvider {
     constructor(metadata, tab) {

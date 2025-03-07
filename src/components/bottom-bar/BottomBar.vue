@@ -10,11 +10,7 @@ const functionsStore = useFunctionsStore()
 const functionsCount = computed(() => workspace.functions.length)
 const appStore = useAppStore()
 
-function onClickLoadFunctions() {
-    functionsStore.loadFunctions(workspace.provider, true)
-}
-
-function inClickInvalidCache() {
+function inClearCache() {
     functionsStore.clearCache(workspace.provider.id)
     functionsStore.loadFunctions(workspace.provider, false)
 }
@@ -28,26 +24,20 @@ function inClickInvalidCache() {
             </div>
 
             <div class="border-r px-1">
-                <span>fn: </span>
+                <span>functions: </span>
                 <span>{{ functionsCount }}</span>
             </div>
 
-            <div class="cursor-pointer border-r px-1 hover:underline" @click="onClickLoadFunctions">
-                Refresh functions
-            </div>
-            <div class="cursor-pointer px-1 hover:underline" @click="inClickInvalidCache">Invalid cache</div>
+            <div class="cursor-pointer px-1 hover:underline" @click="inClearCache">clear cache</div>
         </div>
 
-        <div class="flex items-center gap-x-1">
-            <div v-if="workspace.isLoading || functionsStore.isLoading">Loading...</div>
-            <Button
-                size="sm"
-                text
-                :icon="appStore.isDarkTheme ? 'pi pi-moon' : 'pi pi-sun'"
-                @click="appStore.toggleTheme()"
-            >
-            </Button>
-        </div>
+        <Button
+            size="sm"
+            text
+            :icon="appStore.isDarkTheme ? 'pi pi-moon' : 'pi pi-sun'"
+            @click="appStore.toggleTheme()"
+        >
+        </Button>
     </div>
 </template>
 

@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
-import { FunctionTypeMeta } from '@/config/index.js'
+import { FunctionTypeMeta } from '@/config.js'
 
 const props = defineProps({
     item: {
