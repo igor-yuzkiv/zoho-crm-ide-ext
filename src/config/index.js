@@ -12,6 +12,10 @@ export const FunctionType = {
     automation: 'automation',
     scheduler: 'scheduler',
     unknown: 'unknown',
+    //salessignals',
+    // relatedlist,
+    // validation,
+    // validation_rule
 }
 
 export const FunctionTypeMeta = {

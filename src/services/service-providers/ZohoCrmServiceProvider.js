@@ -1,5 +1,4 @@
 import { ServiceProvider } from './ServiceProvider.js'
-import { parse } from 'date-fns'
 import { snakeCase } from 'lodash'
 import { FunctionType, ServiceProviderType } from '@/config/index.js'
 import { fetchCrmFunctions, fetchFunctionDetails } from '@/api/zoho-crm.api.js'
@@ -23,6 +22,7 @@ function normalizeCrmFunctionData(item) {
     return {
         id,
         type: FunctionType[category] || FunctionType.unknown,
+        category,
         api_name: formatCrmFunctionApiName(api_name, display_name),
         display_name,
         metadata,

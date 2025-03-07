@@ -1,9 +1,14 @@
 {
     "manifest_version": 3,
-    "name": "CrmozZohoIde",
-    "description": "Crmoz Zoho Ide",
+    "name": "ZohoIde",
+    "description": "Zoho Ide",
     "version": "1.0",
-    "permissions": ["scripting", "activeTab", "sidePanel", "cookies"],
+    "permissions": [
+        "scripting",
+        "activeTab",
+        "sidePanel",
+        "cookies"
+    ],
     "action": {
         "default_title": "Click to open panel"
     },
@@ -29,7 +34,9 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["injection.js"],
+            "resources": [
+                "injection.js"
+            ],
             "matches": [
                 "*://*.zoho.eu/*",
                 "*://*.zoho.com/*",
@@ -50,7 +57,9 @@
                 "*://*.zoho.com.au/*",
                 "*://*.zoho.com.cn/*"
             ],
-            "js": ["content.js"]
+            "js": [
+                "content.js"
+            ]
         }
     ]
 }
