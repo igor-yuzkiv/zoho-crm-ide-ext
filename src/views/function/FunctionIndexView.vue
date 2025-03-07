@@ -35,7 +35,7 @@ const functionDetails = computed(() => {
             <Tabs :value="route.name">
                 <TabList>
                     <router-link v-for="navItem in navItems" :key="navItem.title" :to="{ name: navItem.route }">
-                        <Tab :value="navItem.route" class="bg-gray-800 p-1">{{ navItem.title }}</Tab>
+                        <Tab :value="navItem.route" class="dark:bg-gray-800 p-1">{{ navItem.title }}</Tab>
                     </router-link>
                 </TabList>
             </Tabs>

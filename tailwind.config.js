@@ -1,4 +1,5 @@
 import PrimeUI from 'tailwindcss-primeui'
+import TailiwndTypography from '@tailwindcss/typography'
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -12,5 +13,5 @@ export default {
     variants: {
         extend: {},
     },
-    plugins: [PrimeUI],
+    plugins: [PrimeUI, TailiwndTypography],
 }
