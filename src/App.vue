@@ -1,4 +1,5 @@
 <script setup>
+import { AppRouteName } from '@/router/index.js'
 import { useAppStore } from '@/store/useAppStore.js'
 import { useFunctionsStore } from '@/store/useFunctionsStore.js'
 import { useServiceProvidersStore } from '@/store/useServiceProvidersStore.js'
@@ -34,7 +35,7 @@ function onSelectProvider(event) {
 }
 
 function onClickExplorerItem(item) {
-    router.push({ name: 'function.details.script', params: { id: item.id } })
+    router.push({ name: AppRouteName.functionOverview, params: { function_id: item.id } })
 }
 
 onBeforeMount(() => {

@@ -10,10 +10,10 @@ const functionsStore = useFunctionsStore()
 const route = useRoute()
 
 const functionDetails = computed(() => {
-    if (!route.params.id || !workspace.provider?.id) {
+    if (!route.params.function_id || !workspace.provider?.id) {
         return null
     }
-    return functionsStore.getFunctions(workspace.provider.id).find((item) => item.id === route.params.id)
+    return functionsStore.getFunctions(workspace.provider.id).find((item) => item.id === route.params.function_id)
 })
 </script>
 
