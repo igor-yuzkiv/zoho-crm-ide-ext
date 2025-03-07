@@ -1,8 +1,9 @@
 <script setup>
+import { useAppStore } from '@/store/useAppStore.js'
 import { useFunctionsStore } from '@/store/useFunctionsStore.js'
 import { useServiceProvidersStore } from '@/store/useServiceProvidersStore.js'
 import { useWorkspaceStore } from '@/store/useWorkspaceStore.js'
-import { computed } from 'vue'
+import { computed, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
@@ -11,10 +12,11 @@ import { BottomBar } from '@/components/bottom-bar/index.js'
 import { FunctionsExplorer } from '@/components/functions-explorer/index.js'
 import { TopBarMenu } from '@/components/top-bar-menu'
 
+const router = useRouter()
+const appStore = useAppStore()
 const providersStore = useServiceProvidersStore()
 const functionsStore = useFunctionsStore()
 const workspace = useWorkspaceStore()
-const router = useRouter()
 
 const providersOptions = computed(() => {
     return providersStore.providers.map((item) => ({
@@ -35,11 +37,14 @@ function onClickExplorerItem(item) {
     router.push({ name: 'function.details.script', params: { id: item.id } })
 }
 
-workspace.init()
+onBeforeMount(() => {
+    appStore.initTheme()
+    workspace.init()
+})
 </script>
 
 <template>
-    <div class="relative flex h-screen w-full min-w-[400px] flex-col overflow-hidden dark:bg-gray-900 dark:text-white">
+    <div class="relative flex h-screen w-full min-w-[400px] flex-col overflow-hidden dark:bg-gray-800 dark:text-white">
         <TopBarMenu>
             <template #end>
                 <div class="flex items-center gap-x-1">

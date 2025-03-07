@@ -1,8 +1,5 @@
 <script setup>
 import Prism from 'prismjs'
-//import 'prismjs/themes/prism.css';
-// import 'prismjs/themes/prism-tomorrow.css';
-import 'prismjs/themes/prism-okaidia.css'
 
 defineProps({
     code: {
@@ -23,13 +20,8 @@ function onElementMounted(element) {
 </script>
 
 <template>
-    <pre class="code-block"><code :ref="onElementMounted" :class="languageClass">{{ code }}</code></pre>
+    <pre><code :ref="onElementMounted" :class="languageClass">{{ code }}</code></pre>
 </template>
 
 <style scoped>
-.code-block {
-    margin: 0;
-    padding: 5px;
-    background-color: transparent;
-}
 </style>

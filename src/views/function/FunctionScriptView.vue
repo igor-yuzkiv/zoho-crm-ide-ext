@@ -18,7 +18,7 @@ const functionDetails = computed(() => {
 </script>
 
 <template>
-    <CodeBlock class="h-full w-full" :code="functionDetails?.script" />
+    <CodeBlock class="h-full w-full p-2" :code="functionDetails?.script" />
 </template>
 
 <style scoped></style>

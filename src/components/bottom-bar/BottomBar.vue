@@ -1,11 +1,14 @@
 <script setup>
+import { useAppStore } from '@/store/useAppStore.js'
 import { useFunctionsStore } from '@/store/useFunctionsStore.js'
 import { useWorkspaceStore } from '@/store/useWorkspaceStore.js'
 import { computed } from 'vue'
+import Button from 'primevue/button'
 
 const workspace = useWorkspaceStore()
 const functionsStore = useFunctionsStore()
 const functionsCount = computed(() => workspace.functions.length)
+const appStore = useAppStore()
 
 function onClickLoadFunctions() {
     functionsStore.loadFunctions(workspace.provider, true)
@@ -35,7 +38,16 @@ function inClickInvalidCache() {
             <div class="cursor-pointer px-1 hover:underline" @click="inClickInvalidCache">Invalid cache</div>
         </div>
 
-        <div v-if="workspace.isLoading || functionsStore.isLoading">Loading...</div>
+        <div class="flex items-center gap-x-1">
+            <div v-if="workspace.isLoading || functionsStore.isLoading">Loading...</div>
+            <Button
+                size="sm"
+                text
+                :icon="appStore.isDarkTheme ? 'pi pi-moon' : 'pi pi-sun'"
+                @click="appStore.toggleTheme()"
+            >
+            </Button>
+        </div>
     </div>
 </template>
 
