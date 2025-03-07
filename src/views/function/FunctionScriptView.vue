@@ -1,13 +1,15 @@
 <script setup>
+import { useAppStore } from '@/store/useAppStore.js'
 import { useFunctionsStore } from '@/store/useFunctionsStore.js'
 import { useWorkspaceStore } from '@/store/useWorkspaceStore.js'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import CodeBlock from '@/components/code-block/CodeBlock.vue'
 
+const appStore = useAppStore()
 const workspace = useWorkspaceStore()
 const functionsStore = useFunctionsStore()
 const route = useRoute()
+const code = ref('')
 
 const functionDetails = computed(() => {
     if (!route.params.function_id || !workspace.provider?.id) {
@@ -15,10 +17,19 @@ const functionDetails = computed(() => {
     }
     return functionsStore.getFunctions(workspace.provider.id).find((item) => item.id === route.params.function_id)
 })
+
+watch(
+    () => route.params.function_id,
+    () => {
+        if (functionDetails.value) {
+            code.value = functionDetails.value?.script || '// No function code found'
+        }
+    }
+)
 </script>
 
 <template>
-    <CodeBlock class="h-full w-full p-2" :code="functionDetails?.script" />
+    <vue-monaco-editor language="javascript" v-model:value="code" :theme="appStore.isDarkTheme ? 'vs-dark' : 'vs'" />
 </template>
 
 <style scoped></style>

@@ -15,5 +15,13 @@ export default defineConfig({
     build: {
         outDir: './extension/dist',
         emptyOutDir: true,
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'vue-lite': ['vue', 'pinia', 'vue-router'],
+                    'monaco-editor': ['monaco-editor'],
+                }
+            }
+        }
     },
 })

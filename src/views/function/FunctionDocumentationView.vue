@@ -1,18 +1,18 @@
 <script setup>
-import { ref } from 'vue';
-import VueMarkdown from 'vue-markdown-render'
-const text = ref('# Hello Editor \n## Test \n *italic* **bold** \n > Quote  \n --- \n');
+import { ref } from 'vue'
 
+const text = ref('# Hello Editor \n## Test \n *italic* **bold** \n > Quote  \n --- \n')
 </script>
 
 <template>
-    <div class="flex w-full h-full p-1">
-        <div class="prose-invert lg:prose-xl w-full">
-            <VueMarkdown :source="text"/>
+    <div class="flex h-full w-full p-1">
+        <div class="prose-invert w-full lg:prose-xl">
+            <vue-monaco-editor
+                v-model:value="text"
+                language="markdown"
+            />
         </div>
     </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
