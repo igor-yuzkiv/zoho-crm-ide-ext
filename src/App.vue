@@ -32,8 +32,9 @@ function onFunctionClick(item) {
 }
 
 async function onClickRefresh() {
+    console.log('onClickRefresh')
     await providersStore.loadProviders()
-    await functionsStore.loadFunctions(workspace.provider)
+    await functionsStore.loadFunctions(workspace.provider, true)
 }
 
 onBeforeMount(() => {

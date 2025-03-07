@@ -84,6 +84,7 @@ export const useFunctionsStore = defineStore('functions', () => {
     }
 
     async function loadFunctions(provider, force = false) {
+        console.group('loadFunctions', {provider, force})
         if (!provider?.id || isLoading.value) {
             return
         }
@@ -102,6 +103,8 @@ export const useFunctionsStore = defineStore('functions', () => {
             const forSync = functions.filter((item) => !item?.last_sync_at || item.updated_time !== item.last_sync_at)
 
             if (!forSync.length) {
+                console.log('All functions are up to date')
+                console.groupEnd()
                 isLoading.value = false
                 return
             }
@@ -116,10 +119,12 @@ export const useFunctionsStore = defineStore('functions', () => {
                     )
                 })
                 .finally(() => {
+                    console.log('All functions are loaded', {count: forSync.length})
                     isLoading.value = false
                 })
         } catch (e) {
             console.error('Failed to load functions', e)
+            console.groupEnd()
             isLoading.value = false
         }
     }
