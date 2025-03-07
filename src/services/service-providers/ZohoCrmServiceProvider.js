@@ -19,16 +19,21 @@ function formatCrmFunctionApiName(api_name, display_name) {
 function normalizeCrmFunctionData(item) {
     const { id, api_name, category, display_name, script, updatedTime, ...metadata } = item
 
-    return {
+    const result = {
         id,
         type: FunctionType[category] || FunctionType.unknown,
         category,
         api_name: formatCrmFunctionApiName(api_name, display_name),
         display_name,
         metadata,
-        updated_time: Number.isInteger(updatedTime) ? updatedTime : null,
-        script,
+        updated_time: Number.isInteger(updatedTime) ? updatedTime : null
     }
+
+    if (script !== undefined) {
+        result.script = script
+    }
+
+    return result
 }
 
 export class ZohoCrmServiceProvider extends ServiceProvider {
