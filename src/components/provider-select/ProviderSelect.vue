@@ -17,11 +17,25 @@ const props = defineProps({
 })
 
 const options = computed(() => {
-    return props.providers.map((item) => ({
-        label: item.title,
-        value: item.id,
-        isConnected: item.isConnected,
-    }))
+    const groupedBy = Object.groupBy(
+        props.providers.map((item) => ({
+            label: item.title,
+            value: item.id,
+            isConnected: item.isConnected,
+        })),
+        (i) => i.isConnected
+    )
+
+    return [
+        {
+            label: 'Connected',
+            items: groupedBy.true,
+        },
+        {
+            label: 'Not Connected',
+            items: groupedBy.false,
+        }
+    ];
 })
 </script>
 
@@ -33,6 +47,8 @@ const options = computed(() => {
         option-value="value"
         placeholder="-- Service Provider --"
         :disabled="disabled"
+        optionGroupLabel="label"
+        optionGroupChildren="items"
     >
         <template #value>
             <div class="flex items-center gap-x-1" v-if="modelValue">

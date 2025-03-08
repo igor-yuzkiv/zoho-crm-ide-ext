@@ -11,11 +11,11 @@ export class ZohoCreatorServiceProvider extends ServiceProvider {
     }
 
     get type() {
-        return ServiceProviderType.zoho_creator
+        return ServiceProviderType.zoho_creator.name
     }
 
     get id() {
-        return `${ServiceProviderType.zoho_creator}-${this.metadata.host}-${this.metadata.owner_name}-${this.metadata.application_name}`
+        return `${this.type}-${this.metadata.host}-${this.metadata.owner_name}-${this.metadata.application_name}`
     }
 
     get title() {

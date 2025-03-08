@@ -28,18 +28,16 @@ function onSelectProvider(event) {
 }
 
 function onFunctionClick(item) {
+    if (workspace.isLoading || functionsStore.isLoading) {
+        return
+    }
+
     router.push({ name: AppRouteName.functionOverview, params: { function_id: item.id } })
 }
 
-async function onClickRefresh() {
-    console.log('onClickRefresh')
-    await providersStore.loadProviders()
-    await functionsStore.loadFunctions(workspace.provider, true)
-}
-
-onBeforeMount(() => {
+onBeforeMount(async () => {
     appStore.initTheme()
-    workspace.init()
+    await workspace.init()
 })
 </script>
 
@@ -52,12 +50,17 @@ onBeforeMount(() => {
                         :model-value="workspace.provider"
                         :providers="providersStore.providers"
                         @update:model-value="onSelectProvider"
+                        :disabled="workspace.isLoading || functionsStore.isLoading"
                     />
-                    <Button text icon="" @click="onClickRefresh" >
+                    <Button text icon="" @click="workspace.refresh()">
                         <template #icon>
                             <Icon
-                                :icon="workspace.isLoading || functionsStore.isLoading ? 'eos-icons:spinner' : 'ic:twotone-refresh'"
-                                class="w-5 h-5"
+                                :icon="
+                                    workspace.isLoading || functionsStore.isLoading
+                                        ? 'eos-icons:spinner'
+                                        : 'ic:twotone-refresh'
+                                "
+                                class="h-5 w-5"
                                 :class="{ 'animate-spin': workspace.isLoading || functionsStore.isLoading }"
                             />
                         </template>

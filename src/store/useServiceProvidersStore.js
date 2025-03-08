@@ -6,8 +6,8 @@ import { ServiceProviderType } from '@/config.js'
 import { fetchMockChromeTabsQuery } from '@/api/mock.api.js'
 
 const PROVIDERS = {
-    [ServiceProviderType.zoho_crm]: ZohoCrmServiceProvider,
-    [ServiceProviderType.zoho_creator]: ZohoCreatorServiceProvider,
+    [ServiceProviderType.zoho_crm.name]: ZohoCrmServiceProvider,
+    [ServiceProviderType.zoho_creator.name]: ZohoCreatorServiceProvider,
 }
 
 async function fetchBrowserTabs() {
@@ -29,7 +29,7 @@ function resolveProviderFromBrowserTab(tab) {
 
 export const useServiceProvidersStore = defineStore('browser.tabs', () => {
     const providersMap = ref({})
-    const providers = computed(() => Object.values(providersMap.value))
+    const providers = computed(() => Object.values(providersMap.value) || [])
     const connected = computed(() => providers.value.filter((p) => p.isConnected))
 
     function cacheProviders() {

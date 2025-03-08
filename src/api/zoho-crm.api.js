@@ -30,11 +30,15 @@ export async function zohoCrmHttpRequest(tabId, url, method, requestOptions = {}
                     .filter((item) => item.length === 2)
             )
 
+            const orgId = localStorage.getItem('__ext_crmoz_zoho_ide:crm_organization_id')
+
+            console.log('[--zoho-ide-ext] zohoCrmHttpRequest', { url, method, headers, orgId })
+
             const response = await fetch(url.startsWith('http') ? url : `${window.location.origin}${url}`, {
                 method,
                 headers: {
                     Cookie: document.cookie,
-                    'x-crm-org': localStorage.getItem('__ext_crmoz_zoho_ide:crm_organization_id'),
+                    'x-crm-org': orgId,
                     'x-zcsrf-token': `crmcsrfparam=${cookieItems['CT_CSRF_TOKEN']}`,
                     ...headers,
                 },

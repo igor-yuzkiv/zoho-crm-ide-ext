@@ -20,6 +20,18 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     const provider = computed(() => providersStore.providersMap[currentProviderId.value])
     const functions = computed(() => functionsStore.getFunctions(currentProviderId.value))
 
+    async function refresh() {
+        await providersStore.loadProviders();
+        if (currentProviderId.value) {
+            await functionsStore.loadFunctions(provider.value, true)
+        }
+    }
+
+    async function clearCache() {
+        functionsStore.clearCache(provider.value.id)
+        await functionsStore.loadFunctions(provider.value, false)
+    }
+
     async function init() {
         try {
             isLoading.value = true
@@ -47,10 +59,12 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     }
 
     return {
+        isLoading,
         provider,
         functions,
         init,
         setProvider,
-        isLoading,
+        refresh,
+        clearCache,
     }
 })

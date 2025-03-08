@@ -46,7 +46,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
     }
 
     get type() {
-        return ServiceProviderType.zoho_crm
+        return ServiceProviderType.zoho_crm.name
     }
 
     get id() {
@@ -85,6 +85,10 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
      * @returns {Promise<{function: Array, has_more: boolean}>}
      */
     async fetchFunctions(page = 1, per_page = 50) {
+        if (!this.tab?.id) {
+            return { functions: [], has_more: false }
+        }
+
         let start = page <= 1 ? 0 : (page - 1) * per_page + 1
 
         const response = (await fetchCrmFunctions(this.tab.id, start, per_page)) || []
@@ -100,6 +104,10 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
      * @returns {Promise<Object>}
      */
     async fetchFunctionDetails(item) {
+        if (!this.tab?.id) {
+            return item
+        }
+
         const { id, metadata } = item
         if (!id) {
             return item

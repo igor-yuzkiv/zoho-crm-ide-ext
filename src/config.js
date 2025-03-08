@@ -1,8 +1,14 @@
 export const CACHE_TTL = 1000 * 60 * 60 * 24 // 1 day
 
 export const ServiceProviderType = {
-    zoho_crm: 'zoho_crm',
-    zoho_creator: 'zoho_creator',
+    zoho_crm: {
+        name: 'zoho_crm',
+        title: 'Zoho CRM',
+    },
+    zoho_creator: {
+        name: 'zoho_creator',
+        title: 'Zoho Creator',
+    },
 }
 
 export const FunctionType = {
