@@ -1,4 +1,5 @@
 <script setup>
+import { useProjectsStore } from './store/useProjectsStore'
 import { AppRouteName } from '@/router.js'
 import { useAppStore } from '@/store/useAppStore.js'
 import { useFunctionsStore } from '@/store/useFunctionsStore.js'
@@ -7,7 +8,9 @@ import { useWorkspaceStore } from '@/store/useWorkspaceStore.js'
 import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
+import ConfirmDialog from 'primevue/confirmdialog'
 import Menubar from 'primevue/menubar'
+import Toast from 'primevue/toast'
 import FunctionsList from '@/components/functions-list/FunctionsList.vue'
 import ProviderSelect from '@/components/provider-select/ProviderSelect.vue'
 import RefreshButton from '@/components/refresh-button/RefreshButton.vue'
@@ -53,6 +56,7 @@ function onFunctionClick(item) {
 onBeforeMount(async () => {
     appStore.initTheme()
     await workspace.init()
+    useProjectsStore().loadCachedProjects()
 })
 </script>
 
@@ -103,6 +107,8 @@ onBeforeMount(async () => {
 
     <SettingsDialog v-model:visible="isVisibleSettingsDialog" />
     <GlobalSearchDialog v-model:visible="isVisibleSearchDialog" />
+    <Toast />
+    <ConfirmDialog />
 </template>
 
 <style scoped>

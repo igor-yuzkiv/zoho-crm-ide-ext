@@ -32,7 +32,7 @@ export class ServiceProvider {
     }
 
     get isConnected() {
-        return Boolean(this.tab?.id)
+        return Boolean(this.tab)
     }
 
     /**
@@ -45,8 +45,8 @@ export class ServiceProvider {
     }
 
     connect(tab) {
-        if (!tab) {
-            throw new Error('Invalid tab')
+        if (!tab || !tab?.id) {
+            throw new Error('Invalid argument. Browser tab is required')
         }
         this.tab = tab
     }

@@ -59,32 +59,35 @@ export const useServiceProvidersStore = defineStore('browser.tabs', () => {
     }
 
     async function fetchProvidersFromBrowser() {
-        const browserTabs = await fetchBrowserTabs()
-        if (!Array.isArray(browserTabs)) {
+        const response = await fetchBrowserTabs()
+        if (!Array.isArray(response)) {
             return
         }
 
-        const newProviders = []
-
-        for (const tab of browserTabs) {
+        const newProviders = response.reduce((acc, tab) => {
             const provider = resolveProviderFromBrowserTab(tab)
-            if (!provider?.id) {
-                continue
+            if (!provider?.id || acc[provider?.id]) {
+                return acc
             }
 
-            newProviders.push(provider.id)
-
-            if (!providersMap.value[provider.id]) {
-                providersMap.value[provider.id] = provider
-                continue
-            }
-
-            if (!providersMap.value[provider.id].isConnected) {
+            if (providersMap.value[provider.id]) {
                 providersMap.value[provider.id].connect(tab)
+                acc[provider.id] = providersMap.value[provider.id]
+                return acc
             }
-        }
 
-        newProviders.forEach((id) => providersMap.value[id] || providersMap.value[id].disconnect())
+            acc[provider.id] = provider
+            return acc
+        }, {})
+
+        Object.keys(providersMap.value).forEach((key) => {
+            if (!newProviders[key]) {
+                providersMap.value[key].disconnect()
+            }
+        })
+
+        Object.assign(providersMap.value, newProviders)
+        cacheProviders()
     }
 
     async function loadProviders() {

@@ -1,9 +1,8 @@
 <script setup>
+import { useProjectsStore } from '@/store/useProjectsStore'
 import { computed } from 'vue'
 import Select from 'primevue/select'
 import { Icon } from '@iconify/vue'
-
-const modelValue = defineModel()
 
 const props = defineProps({
     providers: {
@@ -16,26 +15,28 @@ const props = defineProps({
     },
 })
 
+const modelValue = defineModel()
+const projectsStore = useProjectsStore()
+
 const options = computed(() => {
+    const projectsMap = Object.fromEntries(projectsStore.projects.map((i) => [i.id, i.name]))
+
     const groupedBy = Object.groupBy(
         props.providers.map((item) => ({
             label: item.title,
             value: item.id,
             isConnected: item.isConnected,
+            project_id: item?.metadata?.project_id || null,
         })),
-        (i) => i.isConnected
+        (i) => i.project_id || 'unassigned'
     )
 
-    return [
-        {
-            label: 'Connected',
-            items: groupedBy.true,
-        },
-        {
-            label: 'Not Connected',
-            items: groupedBy.false,
+    return Object.entries(groupedBy).map(([projectId, items]) => {
+        return {
+            label: projectsMap[projectId] || 'Unassigned',
+            items,
         }
-    ];
+    })
 })
 </script>
 

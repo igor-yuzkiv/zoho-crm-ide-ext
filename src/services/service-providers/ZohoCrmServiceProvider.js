@@ -41,7 +41,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
     }
 
     get id() {
-        return `${this.type}-${this.metadata.host}-${this.metadata.org_id}`
+        return `${this.type}-${this.metadata.org_id}`
     }
 
     get title() {

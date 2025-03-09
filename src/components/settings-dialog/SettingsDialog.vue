@@ -15,7 +15,7 @@ const selectedTab = ref('projects')
 </script>
 
 <template>
-    <Dialog header="Settings" v-model:visible="visible" modal class="w-[98%] lg:w-3/4">
+    <Dialog header="Settings" v-model:visible="visible" modal class="w-[98%] lg:w-3/4" :draggable="false">
         <Tabs v-model:value="selectedTab">
             <TabList class="flex flex-col">
                 <Tab value="projects" class="px-2 py-1">Projects</Tab>
@@ -33,7 +33,4 @@ const selectedTab = ref('projects')
     </Dialog>
 </template>
 
-<style scoped>
-.tab-item {
-}
-</style>
+<style scoped></style>
