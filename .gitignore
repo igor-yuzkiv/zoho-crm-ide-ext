@@ -24,4 +24,3 @@ dist-ssr
 *.sw?
 /_tmp/
 /.env
-/src/mock_data/

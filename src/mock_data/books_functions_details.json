@@ -1,0 +1,1346 @@
+[
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000001311003",
+      "description": "",
+      "drefunction_id": "599957000000005001",
+      "entity": "estimate",
+      "entity_formatted": "Estimate",
+      "function_name": "createzohoprojectfromestimate",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "estimate",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\nestimateID = estimate.get(\"estimate_id\");\nestimatedate = estimate.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n// название домена\nproject_domain = \"crmoztest\";\nnew_project_title = estimate.get(\"estimate_number\");\n// получаем список всех активных проектов\nactive_projects = zoho.projects.getProjectDetails(project_domain,\"active\");\nproject_exist = 0;\nfor each  active_project in active_projects\n{\n\tactive_project_name = active_project.get('name');\n\t// проверяем или такой проект уже создан\n\tif(active_project_name == new_project_title)\n\t{\n\t\tproject_id = active_project.get('id');\n\t\t// айди проекта в Zoho Projects\n\t}\n}\nif(project_id == null)\n{\n\t// проекта не существует - создаем\n\tnew_project = Map();\n\tnew_project.put(\"name\",new_project_title);\n\tresponse = zoho.projects.createProject(project_domain,new_project);\n\tprojects = response.getJSON(\"projects\");\n\tproject_id = projects.getJSON(\"id\");\n\t// айди нового проекта\n}\n// айди проекта теперь есть - продолжаем работу\n// получаем названия продуктов и создаем задачи внутри нашего нового проекта\n// получаем инфу по текущей сущности\n// получаем список продуктов\nproducts = estimate.get(\"line_items\");\n// получаем список задач\ntask_in_projects = zoho.projects.getRecords(project_domain,project_id.toLong(),\"Tasks\");\ntask_in_projects_json = task_in_projects.toJSONList();\nfor each  product in products\n{\n\t// получаем заголовок продукта - \n\ttask_title = product.get(\"name\").toString();\n\t// \tназвание новой задачи в Zoho Projects\n\t// \tпроверяем или такая задача уже есть в нашем проекте\n\tif(!task_in_projects.contains('\"name\":\"' + task_title + '\"'))\n\t{\n\t\t// задачи нет - создаем\n\t\t// создаем задачи внутри нашего нового проекта\n\t\ttaskMap = Map();\n\t\ttaskMap.put(\"name\",task_title);\n\t\ttaskMap.put(\"description\",product.get(\"description\").toString());\n\t\ttaskMap.put(\"duration\",product.get(\"quantity\"));\n\t\ttask_created = zoho.projects.create(project_domain,project_id.toLong(),\"Tasks\",taskMap);\n\t}\n}\ninfo 'Задачи успешно импортированы в Zoho Projects - проект \"' + new_project_title + '\"';\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000001694049",
+      "description": "",
+      "drefunction_id": "599957000000015001",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "test_create_invoice",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\nresponse = invokeurl\n[\n\turl :\"https://www.zohoapis.com/books/v3/invoices/\" + invoice.get(\"invoice_id\") + \"?organization_id=\" + organization.get('organization_id')\n\ttype :GET\n\tconnection:\"zoho_books\"\n];\ninfo response;\ninvoice = response.get(\"invoice\");\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000002096005",
+      "description": "",
+      "drefunction_id": "599957000000019001",
+      "entity": "salesorder",
+      "entity_formatted": "Sales Order",
+      "function_name": "test",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "salesorder",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\nsalesorderID = salesorder.get(\"salesorder_id\");\nsalesorderdate = salesorder.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\n//info salesorder;\nLines = List();\nfor each  ite in salesorder.get(\"line_items\")\n{\n\tliMap = Map();\n\tliMap.put(\"line_item_id\",ite.get(\"line_item_id\"));\n\tliMap.put(\"name\",ite.get(\"name\"));\n\tLines.add(liMap);\n}\nliMap = Map();\nliMap.put(\"item_id\",\"2234095000007522311\");\nliMap.put(\"quantity\",1);\nliMap.put(\"rate\",20);\nLines.add(liMap);\ndataMap = Map();\ndataMap.put(\"customer_id\",salesorder.get(\"customer_id\"));\ndataMap.put(\"line_items\",Lines);\n/*paramMap = Map();\nparamMap.put(\"method\",\"workbook.create\");\nparamMap.put(\"workbook_name\",\"test1\");\nresponse = invokeurl\n[\n\turl :\"https://sheet.zoho.com/api/v2/create\"\n\ttype :POST\n\tparameters:paramMap\n\tconnection:\"zoho_sheets\"\n];\ninfo response;*/\n/*data = Map();\ndata.put(\"A\",\"Test\");\nparamMap = Map();\nparamMap.put(\"method\",\"row.content.set\");\nparamMap.put(\"worksheet_name\",\"Sheet1\");\nparamMap.put(\"row\",\"2\");\nparamMap.put(\"column_array\", {1,2,3});\n//paramMap.put(\"worksheet_id\",\"ekz7m9ff816aa99674eb6af93aa72db73c072\");\nparamMap.put(\"data_array\",{\"1\",\"1\",\"1\"});\nresponse = invokeurl\n[\n\turl :\"https://sheet.zoho.com/api/v2/ekz7m9ff816aa99674eb6af93aa72db73c072\"\n\ttype :POST\n\tparameters:paramMap\n\tconnection:\"zoho_sheets\"\n];\ninfo response;*/\n//info zoho.sheet.getRecords(\"ekz7m9ff816aa99674eb6af93aa72db73c072\", \"Sheet1\",Map(),\"zoho_sheets\");\n/*headerMap = Map();\nparamMap = Map();\nheaderMap.put(\"Content-disposition\",\"attachment; filename=test1.xls\");\nheaderMap.put(\"Content-type\",\"application/xls\");\nparamMap.put(\"method\",\"workbook.download\");\nparamMap.put(\"format\",\"xls\");\nparamMap.put(\"worksheet_name\",\"Sheet1\");\nresponse = invokeurl\n[\n\turl :\"https://sheet.zoho.com/api/v2/download/ekz7m9ff816aa99674eb6af93aa72db73c072\"\n\ttype :GET\n\tparameters:paramMap\n\theaders:headerMap\n\tconnection:\"zoho_sheets\"\n];\nopenUrl(response,\"new window\");\n*/\nresponse = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/salesorders/2234095000014576064?organization_id=713248035\"\n\ttype :PUT\n\tparameters:dataMap.toString()\n\tconnection:\"zoho_books\"\n];\n/*\nresponse = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/salesorders/2234095000002961188?organization_id=713248035\"\n\ttype :GET\n\tconnection:\"zoho_books\"\n];*/\ninfo response;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000005155011",
+      "description": "",
+      "drefunction_id": "599957000000119001",
+      "entity": "estimate",
+      "entity_formatted": "Estimate",
+      "function_name": "test2",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "estimate",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\norganizationID = organization.get(\"organization_id\");\n// estimateID = estimate.get(\"estimate_id\");\n// r = zoho.books.updateRecord(\"Estimates\",organizationID,estimateID,{\"custom_fields\":{{\"customfield_id\":\"2234095000005194009\",\"value\":\"2\"}}},\"zoho_books\");\n// info r;\nresp = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/estimates/2234095000006426180/comments?organization_id=\" + organizationID\n\ttype :GET\n\tconnection:\"zoho_books\"\n];\ninfo resp;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000005374003",
+      "description": "",
+      "drefunction_id": "599957000000141001",
+      "entity": "estimate",
+      "entity_formatted": "Estimate",
+      "function_name": "test_est",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "estimate",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nsendmail\n[\n\tfrom :zoho.loginuserid\n\tto :\"iy@crmoz.com\"\n\tsubject :\"Test Books\"\n\tmessage :\"Estimate created!\"\n]\n*/\ninfo estimate;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000005492005",
+      "description": "",
+      "drefunction_id": "599957000000152001",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "test3",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\nresponse = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/invoices/\" + invoiceID + \"?accept=pdf&organization_id=\" + organizationID\n\ttype :GET\n\tconnection:\"zoho_books\"\n];\ninfo response;\nsendmail\n[\n\tfrom :zoho.loginuserid\n\tto :\"mp@crmoz.com\"\n\tsubject :\"test\"\n\tmessage :\"test\"\n\tAttachments :file:response\n]\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000007499060",
+      "description": "",
+      "drefunction_id": "599957000000173001",
+      "entity": "salesorder",
+      "entity_formatted": "Sales Order",
+      "function_name": "calculate_margin",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "salesorder",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\nsalesorderID = salesorder.get(\"salesorder_id\");\nsalesorderdate = salesorder.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\ngrossMarginSO = 0;\ngrossSalesPrice = 0;\ngrossCostPrice = 0;\ngrossDiscount = 0;\ndeliveryCost = 0;\ndeliveryCharge = 0;\ndeliveryID = \"\";\n//\n//deliveryFieldSO = Map();\n// get delivery type\nfor each  cf in salesorder.get(\"custom_fields\")\n{\n\tif(cf.get(\"api_name\") == \"cf_shipping_type\")\n\t{\n\t\t// \t\tdeliveryFieldSO.put(\"customfield_id\",2234095000007522019);\n\t\t// \t\tdeliveryFieldSO.put(\"value\",cf.get(\"value\"));\n\t\tdeliveryResponse = zoho.books.getRecordsByID(\"cm_delivery_type\",organization.get(\"organization_id\"),cf.get(\"value\"),\"zoho_books\");\n\t\tdelivery = deliveryResponse.get(\"module_record\");\n\t\tinfo delivery;\n\t\tdeliveryID = delivery.get(\"module_record_id\");\n\t\tfor each  deliveryField in delivery.get(\"module_fields\")\n\t\t{\n\t\t\tif(deliveryField.get(\"api_name\") == \"cf_cost\")\n\t\t\t{\n\t\t\t\tdeliveryCost = deliveryField.get(\"value\");\n\t\t\t}\n\t\t\tif(deliveryField.get(\"api_name\") == \"cf_charge\")\n\t\t\t{\n\t\t\t\tdeliveryCharge = deliveryField.get(\"value\");\n\t\t\t}\n\t\t}\n\t}\n}\n//\nlineItems = List();\nfor each  itemSO in salesorder.get(\"line_items\")\n{\n\t//(Sales Price – Cost Price – Discount) / Sales Price * 100\n\t//get item detail\n\titemResponse = zoho.books.getRecordsByID(\"items\",organization.get(\"organization_id\"),itemSO.get(\"product_id\"),\"zoho_books\");\n\titem = itemResponse.get(\"item\");\n\tdiscount = 0;\n\t//get discount per item\n\tfor each  cf in itemSO.get(\"item_custom_fields\")\n\t{\n\t\tif(cf.get(\"api_name\") == \"cf_discount\")\n\t\t{\n\t\t\tdiscount = cf.get(\"value\");\n\t\t}\n\t}\n\t//\n\tmargin = (item.get(\"sales_rate\") - item.get(\"purchase_rate\") - discount) / item.get(\"sales_rate\") * 100;\n\tlineItem = Map();\n\tcustomField = Map();\n\tcustomField.put(\"api_name\",\"cf_margin\");\n\tcustomField.put(\"value\",margin);\n\t//\n\titemCustomFields = List();\n\titemCustomFields.add(customField);\n\tlineItem.put(\"item_custom_fields\",itemCustomFields);\n\tlineItem.put(\"line_item_id\",itemSO.get(\"line_item_id\"));\n\tlineItems.add(lineItem);\n\t//calculate gross values\n\tgrossSalesPrice = grossSalesPrice + item.get(\"sales_rate\");\n\tgrossCostPrice = grossCostPrice + item.get(\"purchase_rate\");\n\tgrossDiscount = grossDiscount + discount;\n}\n//(Gross Sales Price + Delivery Charge – Gross Cost Price – Delivery Cost – Gross Discount) / Gross Sales Price * 100\ntotalMargin = (grossSalesPrice + deliveryCharge - grossCostPrice - deliveryCost - grossDiscount) / grossSalesPrice * 100;\n//\ntotalMarginField = Map();\ntotalMarginField.put(\"value\",totalMargin);\ntotalMarginField.put(\"customfield_id\",2234095000007499003);\n//\ncustomFieldsSO = List();\ncustomFieldsSO.add(totalMarginField);\n//customFieldsSO.add(deliveryFieldSO);\n//\ndata = Map();\ndata.put(\"line_items\",lineItems);\ndata.put(\"custom_fields\",customFieldsSO);\ndata.put(\"shipping_charge\",deliveryCost);\n//---------------------------------------------------------------------\nif(deliveryID != \"2234095000007522244\")\n{\n\tdata.put(\"shipping_charge_tax_id\",2234095000008129229);\n}\nelse\n{\n\tdata.put(\"shipping_charge_tax_id\",2234095000008129219);\n}\n//---------------------------------------------------------------------\nresponse = zoho.books.updateRecord(\"salesorders\",organization.get(\"organization_id\"),salesorder.get(\"salesorder_id\"),data,\"zoho_books\");\ninfo response;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000007656011",
+      "description": "",
+      "drefunction_id": "599957000000190003",
+      "entity": "customer_payment",
+      "entity_formatted": "Customer Payment",
+      "function_name": "testp",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "customer_payment",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\npaymentID = customer_payment.get(\"payment_id\");\norganizationID = organization.get(\"organization_id\");\n*/\ninfo customer_payment;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000007655028",
+      "description": "",
+      "drefunction_id": "599957000000196007",
+      "entity": "item",
+      "entity_formatted": "Item",
+      "function_name": "test_123",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "item",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.  \nitemID = item.get(\"item_id\");\norganizationID = organization.get(\"organization_id\");\n*/\ninfo item;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000007880027",
+      "description": "",
+      "drefunction_id": "599957000000217001",
+      "entity": "customer",
+      "entity_formatted": "Customers",
+      "function_name": "custtest",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "customer",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\ncustomerID = customer.get(\"contact_id\");\ncompanyName = customer.get(\"company_name\");\norganizationID = organization.get(\"organization_id\");\na = zoho.books.updateRecord(\"Contacts\",organizationID,customerID,{\"default_templates\":{\"invoice_email_template_id\":2234095000007880025}},\"zoho_books\");\nemails = List();\nemails.add(\"mikhailpopov0585@gmail.com\");\njson = Map();\njson.put(\"to_mail_ids\",emails);\nparams = Map();\nparams.put(\"JSONString\",json);\nres = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/invoices/2234095000005212031/email?organization_id=\" + organizationID\n\ttype :POST\n\tparameters:params\n\tconnection:\"zoho_books\"\n];\ninfo res;\n*/\n// customerID = customer.get(\"contact_id\");\n// organizationID = organization.get(\"organization_id\");\n// a = zoho.books.getRecordsByID(\"Contacts\",organizationID,customerID,\"zoho_books\");\n// info a;\ninfo customer;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000008052005",
+      "description": "",
+      "drefunction_id": "599957000000230001",
+      "entity": "vendor",
+      "entity_formatted": "Vendors",
+      "function_name": "test_vendor",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "vendor",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\nvendorID = vendor.get(\"contact_id\");\ncompanyName = vendor.get(\"company_name\");\norganizationID = organization.get(\"organization_id\");\n*/\ninfo vendor;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000008453001",
+      "description": "",
+      "drefunction_id": "599957000000245001",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "testsendinvoice",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\ninfo invoice;\n/*\nemails = list();\nemails.add(\"mikhailpopov0585@gmail.com\");\njson = Map();\njson.put(\"to_mail_ids\",emails);\nparams = Map();\nparams.put(\"JSONString\",json);\nresponse = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/invoices/\" + invoice.get(\"invoice_id\") + \"/email?organization_id=\" + organization.get(\"organization_id\")\n\ttype :POST\n\tparameters:params\n\tconnection:\"zoho_books\"\n];\ninfo response;\n*/\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000009234045",
+      "description": "",
+      "drefunction_id": "599957000000259003",
+      "entity": "salesorder",
+      "entity_formatted": "Sales Order",
+      "function_name": "test_function",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "salesorder",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\nsalesorderID = salesorder.get(\"salesorder_id\");\nsalesorderdate = salesorder.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\nso = zoho.books.getRecordsByID(\"salesorders\",organization.get(\"organization_id\"),salesorder.get(\"salesorder_id\"));\nsalesorder.insert(salesorder);\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000009689009",
+      "description": "",
+      "drefunction_id": "599957000000264001",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "testd",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\ninfo zoho.books.getRecordsByID(\"invoices\",organization.get(\"organization_id\"),2234095000009316163,\"zoho_books\");\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000010143013",
+      "description": "",
+      "drefunction_id": "599957000000309001",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "test_file",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\ninfo zoho.books.getRecords(\"salespersons\",organization.get(\"organization_id\"),\"zoho_books\");\n/*info zoho.books.getRecordsByID(\"invoices\",organization.get(\"organization_id\"),\"2234095000010008038\",\"zoho_books\");\nheaders_data = Map();\nresponse = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/invoices/2234095000010008038/attachment?organization_id=713248035\"\n\ttype :GET\n\tconnection:\"zoho_books\"\n];*/\n//info invoice;\n/*\nheader_data = Map();\n//------------------------------------------------------------------\n// This line is the fix!\n//------------------------------------------------------------------\nheader_data.put(\"Content-Type\",\"application/x-www-form-urlencoded\");\n jsonText = \"{Name:'Lia Shelton', OrderNo:[343,443,577]}\";    \n csv_file = jsonText.toXML().toFile(\"test.xml\"); \n //csv_file.setParamName(\"attachment\");\ncfList = List();\ncfMap = Map();\ncfMap.put(\"customfield_id\", \"2234095000010143001\");\ncfMap.put(\"value\", csv_file);\ncfList.add(cfMap);\ninfo zoho.books.updateRecord(\"invoices\", organization.get(\"organization_id\"),\"2234095000010008038\",{\"custom_fileds\":cfList},\"zoho_books\");\n /*result = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/invoices/2234095000010008038/attachment?organization_id=713248035\"\n\ttype :POST\n\tfiles:csv_file\n\tdetailed:true\n\tconnection:\"zoho_books\"\n];*/\n//info result;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000010926009",
+      "description": "",
+      "drefunction_id": "599957000000337001",
+      "entity": "cm_test",
+      "entity_formatted": "test",
+      "function_name": "test333",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "cm_test",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\nentityID = cm_test.get(\"module_record_id\");\norganizationID = organization.get(\"organization_id\");\n*/\norganizationID = organization.get(\"organization_id\");\ninfo zoho.books.getRecords(\"cm_test\",organizationID);\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000011984009",
+      "description": "",
+      "drefunction_id": "599957000000404001",
+      "entity": "customer",
+      "entity_formatted": "Customers",
+      "function_name": "test_portal",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "customer",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\ncustomerID = customer.get(\"contact_id\");\ncompanyName = customer.get(\"company_name\");\norganizationID = organization.get(\"organization_id\");\n*/\n/*\ncustomerID = customer.get(\"contact_id\");\norganizationID = organization.get(\"organization_id\");\ncontactDetails = zoho.books.getRecordsByID(\"Contacts\",organizationID,customerID,\"zoho_books\").get(\"contact\");\n//info contactDetails;\ncontactPersons = contactDetails.get(\"contact_persons\").toMap();\ncontactPersonID = contactPersons.get(\"contact_person_id\");\niMap = Map();\niMap.put(\"contact_person_id\",contactPersonID);\niList = List();\niList.add(iMap);\njson = Map();\njson.put(\"contact_persons\",iList);\nparams = Map();\nparams.put(\"JSONString\",json);\nresponse = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/contacts/\" + customerID + \"/portal/enable?organization_id=\" + organizationID\n\ttype :POST\n\tparameters:params\n\tconnection:\"zoho_books\"\n];\ninfo response;\n*/\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000012001021",
+      "description": "",
+      "drefunction_id": "599957000000408001",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "test_template_email",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.*/\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\nhtml = '<table class=\"pcs-itemtable\"><thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Tax</th><th>Amount</th></tr></thead><tbody class=\"itemBody\" id=\"lineitem\">';\ninvoiceDetails = zoho.books.getRecordsByID(\"Invoices\",organizationID,invoiceID,\"zoho_books\");\ninfo invoiceDetails;\n//<tr><td>%ItemName%</td><td>%ItemQty%</td><td>%ItemRate%</td><td>%ItemTaxAmount%</td><td>%ItemAmount%</td></tr></tbody></table>\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000012001027",
+      "description": "",
+      "drefunction_id": "599957000000408012",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "test_email_template",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\norgId = \"713248035\";\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\n*/\nbooksCustomerId = 2234095000005430882;\nresponse = invokeurl\n[\n\turl :\"https://www.zohoapis.com/books/v3/contacts/\" + booksCustomerId + \"?organization_id=\" + orgId\n\ttype :GET\n\tconnection:\"zoho_books\"\n];\ninfo response;\nbooksCustomer = response.get(\"contact\");\nitems = List();\nitem = Map();\n// \tif (!booksItems.containKey(row.get(\"Product_Name\").get(\"id\"))) {\n// \t\tparams = Map();\n// \t\tparams.put(\"zcrm_product_id\",row.get(\"Product_Name\").get(\"id\"));\n// \t\tresponse = invokeurl\n// [\n// \turl: \"https://www.zohoapis.com/books/v3/items?organization_id=\" + orgId\n// \ttype: GET\n// \tparameters: params\n// \tconnection: \"zoho_books\"\n// ];\n// info response;\n// \t\tbooksItems.put(row.get(\"Product_Name\").get(\"id\"),response.get(\"items\").get(0).get(\"item_id\"));\n// \t} \n// \titem.put(\"item_id\",booksItems.get(row.get(\"Product_Name\").get(\"id\")));\nitem.put(\"name\",\"+VALenovo ThinkCentre Edge 72\");\nitem.put(\"rate\",10);\nitem.put(\"quantity\",1);\nitems.add(item);\nparams = Map();\nparams.put(\"customer_id\",\"2234095000005430882\");\nparams.put(\"contact_persons\",{booksCustomer.get(\"primary_contact_id\")});\nparams.put(\"date\",\"2023-06-23\");\nparams.put(\"line_items\",items);\nurl = \"https://books.zoho.com/api/v3/invoices?organization_id=\" + orgId;\nurl = url + \"&send=true&email_template_id=2234095000007880025\";\ninfo url;\ninfo params;\nresponse = invokeurl\n[\n\turl :url\n\ttype :POST\n\tparameters:params.toString()\n\tconnection:\"zoho_books\"\n];\ninfo response;\n/*\nhtml = '<table class=\"pcs-itemtable\"><thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody class=\"itemBody\" id=\"lineitem\">';\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\ninvDetails = zoho.books.getRecordsByID(\"Invoices\",organizationID,invoiceID,\"zoho_books\");\nlineItems = invDetails.get(\"invoice\").get(\"line_items\");\ncf = List();\ncfm = Map();\ninfo lineItems;\nfor each  li in lineItems\n{\n\thtml = (html + '<tr><td style=\"text-align:left;width:60%;\">' + li.get(\"name\")) + '</td><td style=\"text-align:center;width:20%;\">' + li.get(\"quantity\") + '</td><td style=\"text-align:center;width:20%;\">' + li.get(\"rate\") + '</td><td style=\"text-align:center;width:20%;\">' + li.get(\"item_total\") + '</td></tr>';\n}\nhtml = html + '</tbody></table>';\ncfm.put(\"api_name\",\"cf_html_template\");\ncfm.put(\"value\",html);\net = List();\nemt = Map();\nemt.put(\"selected\",true);\nemt.put(\"email_template_id\",\"2234095000007880025\");\net.add(emt);\ncf.add(cfm);\ndata = Map();\ndata.put(\"custom_fields\",cf);\ndata.put(\"email_template_id\",\"2234095000007880025\");\ninfo zoho.books.updateRecord(\"Invoices\",organizationID,invoiceID,data,\"zoho_books\");\n*/\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000012949085",
+      "description": "",
+      "drefunction_id": "599957000000449001",
+      "entity": "item",
+      "entity_formatted": "Item",
+      "function_name": "data_synchronization",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "item",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n// This is a sample function. Uncomment to execute or make changes to this function.  \nitemID = item.get(\"item_id\");\norganizationID = organization.get(\"organization_id\");\npage_list = {1,2,3,4,5,6,7,8,9,10};\nfor each  page in page_list\n{\n\tresponse = invokeurl\n\t[\n\t\turl :\"https://www.zohoapis.com/books/v3/items?organization_id=\" + organizationID + \"&page=\" + page\n\t\ttype :GET\n\t\tconnection:\"zoho_books\"\n\t];\n\trecords = response.get(\"items\");\n\tif(records.size() > 0)\n\t{\n\t\tdatalist = List();\n\t\tfor each  item in records\n\t\t{\n\t\t\tresponse = invokeurl\n\t\t\t[\n\t\t\t\turl :\"https://www.zohoapis.com/books/v3/items/\" + item.get(\"item_id\") + \"?organization_id=\" + organizationID\n\t\t\t\ttype :GET\n\t\t\t\tconnection:\"zoho_books\"\n\t\t\t];\n\t\t\trecord = response.get(\"item\");\n\t\t\tproductMap = Map();\n\t\t\tproductMap.put(\"Product_Name\",record.get(\"name\"));\n\t\t\tproductMap.put(\"SKU\",record.get(\"sku\"));\n\t\t\tproductMap.put(\"Discounted_Price\",record.get(\"rate\"));\n\t\t\tproductMap.put(\"Description\",record.get(\"description\"));\n\t\t\tfields = record.get(\"custom_fields\");\n\t\t\tfor each  field in fields\n\t\t\t{\n\t\t\t\tif(field.get(\"api_name\") == \"cf_image\" || field.get(\"api_name\") == \"cf_product_category_tree\")\n\t\t\t\t{\n\t\t\t\t\tvalue = '';\n\t\t\t\t\tfor each  image in field.get(\"value\")\n\t\t\t\t\t{\n\t\t\t\t\t\tvalue = (value + image) + \", \";\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\telse\n\t\t\t\t{\n\t\t\t\t\tvalue = field.get(\"value\");\n\t\t\t\t}\n\t\t\t\tproductMap.put(field.get(\"api_name\"),value);\n\t\t\t}\n\t\t\tdatalist.add(productMap);\n\t\t}\n\t\tif(datalist.size() > 100)\n\t\t{\n\t\t\tinfo zoho.crm.bulkCreate(\"Products\",datalist.subList(0,100));\n\t\t\tinfo zoho.crm.bulkCreate(\"Products\",datalist.subList(100,200));\n\t\t}\n\t\telse\n\t\t{\n\t\t\tinfo zoho.crm.bulkCreate(\"Products\",datalist);\n\t\t}\n\t}\n\telse\n\t{\n\t\tbreak;\n\t}\n}\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000014053019",
+      "description": "",
+      "drefunction_id": "599957000000496001",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "branches",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\ninfo zoho.books.getRecords(\"Transactions\",\"2234095000013993091\");\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000014055009",
+      "description": "",
+      "drefunction_id": "599957000000493003",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "test_data",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\norganizationID = organization.get(\"organization_id\");\nresp = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/invoices?organization_id=\" + organizationID\n\ttype :GET\n\tconnection:\"zoho_books\"\n];\ninfo resp;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000014144072",
+      "description": "",
+      "drefunction_id": "599957000000503001",
+      "entity": "expense",
+      "entity_formatted": "Expense",
+      "function_name": "link_order",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "expense",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.  \nexpenseID = expense.get(\"expense_id\");\nexpenseDate = expense.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\ninfo expense.get(\"expense_id\");\ninfo organization.get(\"organization_id\");\nfor each  field in expense.get(\"custom_fields\")\n{\n\tif(field.get(\"field_id\") == \"2234095000014144038\")\n\t{\n\t\tinfo field.get(\"value\");\n\t\t// \t\ttest = Map();\n\t\t// \t\ttest.put(\"description\", \"test test\");\n\t\t// \t\tresponse = invokeUrl [\n\t\t// \t\t\turl: \"https://www.zohoapis.com/books/v3/expenses/\" + expense.get(\"expense_id\") + \"?organization_id=\" + organization.get(\"organization_id\")\n\t\t// \t\t\ttype: PUT\n\t\t// \t\t\tparameters: test.toString()\n\t\t// \t\t\tconnection: \"zoho_books_expenses\"\n\t\t// \t\t];\n\t\t// \t\tinfo response;\n\t}\n}\nexpMap = Map();\ncustomFieldList = List();\nfieldMap = Map();\nfieldMap.put(\"value\",\"2234095000011575247\");\nfieldMap.put(\"api_name\",\"cf_order\");\ncustomFieldList.add(fieldMap);\nexpMap.put(\"custom_fields\",customFieldList);\n// info expMap;\n//info zoho.books.updateRecord(\"Expenses\",organization.get(\"organization_id\"),expense.get(\"expense_id\"),expMap);\nresponse = invokeurl\n[\n\turl :\"https://www.zohoapis.com/books/v3/expenses/\" + expense.get(\"expense_id\") + \"?organization_id=\" + organization.get(\"organization_id\")\n\ttype :PUT\n\tparameters:expMap.toString()\n\tconnection:\"zoho_books_expenses\"\n];\ninfo response;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000015105007",
+      "description": "",
+      "drefunction_id": "599957000000552003",
+      "entity": "expense",
+      "entity_formatted": "Expense",
+      "function_name": "potencial",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "expense",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\nexpenseID = expense.get(\"expense_id\");\nexpenseDate = expense.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\nexpenseData = zoho.books.getRecordsByID(\"Expenses\",organizationID,expenseID,\"zoho_books\");\nexpense = expenseData.get(\"expense\");\ncustomer_id = expense.get(\"customer_id\");\npotentialsData = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/crm/contacts/\" + customer_id + \"/potentials?organization_id=\" + organizationID\n\ttype :GET\n\tconnection:\"zoho_books\"\n];\nif(!potentialsData.get(\"data\").isNull())\n{\n\tpotentials = potentialsData.get(\"data\");\n\tif(!isNull(potentials.get(0)))\n\t{\n\t\tinfo potentials;\n\t\tpotential = potentials.get(0);\n\t\tpotential_id = potential.get(\"potential_id\");\n\t\tname = potential.get(\"name\");\n\t\tinfo potential_id;\n\t\tinfo name;\n\t\tinfo zoho.books.updateRecord(\"Expenses\",organizationID,expenseID,{\"zcrm_potential_id\":potential_id},\"zoho_books\");\n\t}\n}\nelse\n{\n\tinfo \"gg1\";\n}\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000015551027",
+      "description": "",
+      "drefunction_id": "599957000000581001",
+      "entity": "customer_payment",
+      "entity_formatted": "Customer Payment",
+      "function_name": "ttest_p",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "customer_payment",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\npaymentID = customer_payment.get(\"payment_id\");\norganizationID = organization.get(\"organization_id\");\n*/\ninfo customer_payment;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000015577001",
+      "description": "",
+      "drefunction_id": "599957000000578003",
+      "entity": "customer_payment",
+      "entity_formatted": "Customer Payment",
+      "function_name": "test_payment_transaction",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "customer_payment",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\npaymentID = customer_payment.get(\"payment_id\");\norganizationID = organization.get(\"organization_id\");\n*/\n// Constant Values\nc_fromAccountRetPayments = \"2234095000015643005\";\nc_needlyAccount = \"2234095000015643009\";\nc_transactionType = \"transfer_fund\";\nc_orgID = organization.get(\"organization_id\");\nnewLine = hexToText(\"0A\");\nstatus = null;\n//\nsearchParam = {\"reference_number\":\"RET-00002\"};\nresponse = invokeurl\n[\n\turl :\"https://www.zohoapis.com/books/v3/banktransactions?organization_id=\" + c_orgID + \"&reference_number=RET-00002&account_id=\" + c_needlyAccount + \"&date_start=2022-12-20&date_end=2022-12-20\"\n\ttype :GET\n\tconnection:\"zoho_books\"\n];\n//info response;\nif(response.getJSON(\"banktransactions\").size() == 0)\n{\n\tinfo \"AAA\";\n}\n//banktransactions\ntransactionMap = Map();\n// Check if Payment assign to Retainer Invoice\nretainerinvoice = customer_payment.getJSON(\"retainerinvoice\");\npaymentAccountId = customer_payment.get(\"account_id\");\nif(retainerinvoice != null)\n{\n\t// Predefined Data for make Transaction\n\tretainerId = retainerinvoice.getJSON(\"retainerinvoice_id\");\n\tretainerInvoiceNumber = retainerinvoice.getJSON(\"retainerinvoice_number\");\n\tretainerDate = retainerinvoice.getJSON(\"retainerinvoice_date\");\n\tpaymentAmount = ifNull(customer_payment.getJSON(\"amount\"),0);\n\tpaymentAmountFormatted = ifNull(customer_payment.getJSON(\"amount_formatted\"),\"$0.00\");\n\tpaymentDate = ifNull(customer_payment.getJSON(\"date\"),now);\n\tcustomerName = customer_payment.getJSON(\"customer_name\");\n\tdescription = \"\";\n\tinvoiceReferenceNumber = \"\";\n\ttry \n\t{\n\t\t// Retainer Invoice Details\n\t\tretInvoiceDetails = zoho.books.getRecordsByID(\"retainerinvoices\",c_orgID,retainerId,\"zoho_books\");\n\t\t//\tinfo retInvoiceDetails;\n\t\tif(retInvoiceDetails.getJSON(\"code\") == 0 && retInvoiceDetails.getJSON(\"retainerinvoice\") != null)\n\t\t{\n\t\t\tinvoiceReferenceNumber = retInvoiceDetails.getJSON(\"retainerinvoice\").getJSON(\"reference_number\");\n\t\t\tinvoices = retInvoiceDetails.getJSON(\"invoices\");\n\t\t\t//\n\t\t\tif(invoices != null && invoices.size() > 0)\n\t\t\t{\n\t\t\t\tinvoiceReferenceNumber = invoices.get(0).get(\"invoice_number\");\n\t\t\t}\n\t\t\tstatus = retInvoiceDetails.getJSON(\"retainerinvoice\").getJSON(\"status\");\n\t\t}\n\t\tif(status == \"paid\" && paymentAccountId == c_fromAccountRetPayments)\n\t\t{\n\t\t\t//Description\n\t\t\ttransactionMap = Map();\n\t\t\tdescription = customerName + newLine + \"Invoice Number: \" + invoiceReferenceNumber + newLine + paymentAmountFormatted + \" using \" + retainerInvoiceNumber;\n\t\t\t// Transaction Data Map\n\t\t\ttransactionMap.put(\"from_account_id\",c_fromAccountRetPayments);\n\t\t\ttransactionMap.put(\"to_account_id\",c_needlyAccount);\n\t\t\ttransactionMap.put(\"transaction_type\",c_transactionType);\n\t\t\ttransactionMap.put(\"amount\",paymentAmount.toDecimal());\n\t\t\ttransactionMap.put(\"date\",paymentDate.toDate().toString(\"yyyy-mm-dd\"));\n\t\t\ttransactionMap.put(\"reference_number\",retainerInvoiceNumber);\n\t\t\ttransactionMap.put(\"description\",description);\n\t\t\t/*\tresponse = invokeurl\n\t\t\t[\n\t\t\t\turl :\"https://www.zohoapis.com/books/v3/banktransactions?organization_id=\" + c_orgID\n\t\t\t\ttype :POST\n\t\t\t\tparameters:transactionMap.toString()\n\t\t\t\tconnection:\"zoho_books\"\n\t\t\t];\n\t\t\tinfo response;*/\n\t\t}\n\t}\n\tcatch (e)\n\t{\n\t\tinfo e.toString();\n\t}\n}\nelse\n{\n\tinfo \"NO RET\";\n}\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000015643223",
+      "description": "",
+      "drefunction_id": "599957000000586017",
+      "entity": "retainer_invoice",
+      "entity_formatted": "Retainer Invoice",
+      "function_name": "test_ret",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "retainer_invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.  \nretainerInvoiceID = retainer_invoice.get(\"retainerinvoice_id\");\nretainerInvoiceDate = retainer_invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\nretainer = zoho.books.getRecordsByID(\"retainerinvoices\",organization.get(\"organization_id\"),\"2234095000005210090\",\"zoho_books\");\ninfo retainer;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000015694001",
+      "description": "",
+      "drefunction_id": "599957000000580025",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "inv",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\n//invoice = zoho.books.getRecordsByID(\"invoices\", organization.get(\"organization_id\"), invoice.get(\"invoice_id\"), \"zoho_books\");\n//info invoice;\nresp = invokeurl\n[\n\turl :\"https://www.zohoapis.com/books/v3/invoices/\" + invoice.get(\"invoice_id\") + \"/payments?organization_id=\" + organization.get(\"organization_id\")\n\ttype :GET\n\tconnection:\"zoho_books\"\n];\npayments = resp.getJSON(\"payments\");\npaymentId = payments.get(0).get(\"payment_id\");\np = zoho.books.getRecordsByID(\"customerpayments\",organization.get(\"organization_id\"),paymentId,\"zoho_books\");\ninfo p;\n//rinvoice = zoho.books.getRecordsByID(\"retainerinvoices\", organization.get(\"organization_id\"), 2234095000005211081, \"zoho_books\");\n//info rinvoice;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000015783009",
+      "description": "",
+      "drefunction_id": "599957000000579027",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "test_transactions",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\n//if (invoice.get(\"status\") == \"paid\"){\nc_needlyAccount = \"2234095000015643009\";\nc_transactionType = \"transfer_fund\";\nc_orgID = organization.get(\"organization_id\");\ninvoiceNumber = invoice.get(\"invoice_number\");\ncustomerName = invoice.get(\"customer_name\");\nnewLine = hexToText(\"0A\");\nstatus = null;\n//\ninvoicePaymentsResponse = invokeurl\n[\n\turl :\"https://www.zohoapis.com/books/v3/invoices/\" + invoice.get(\"invoice_id\") + \"/payments?organization_id=\" + organization.get(\"organization_id\")\n\ttype :GET\n\tconnection:\"zoho_books\"\n];\nif(invoicePaymentsResponse.getJSON(\"code\") == 0 && invoicePaymentsResponse.getJSON(\"payments\").size() > 0)\n{\n\tpayments = invoicePaymentsResponse.getJSON(\"payments\");\n\tfor each  payment in payments\n\t{\n\t\tpaymentId = payment.get(\"payment_id\");\n\t\tpaymentDetails = zoho.books.getRecordsByID(\"customerpayments\",organization.get(\"organization_id\"),paymentId,\"zoho_books\");\n\t\tpaymentDetails = paymentDetails.getJSON(\"payment\");\n\t\tif(paymentDetails.getJSON(\"retainerinvoice\") != null)\n\t\t{\n\t\t\tretainerinvoiceId = paymentDetails.getJSON(\"retainerinvoice\").getJSON(\"retainerinvoice_id\");\n\t\t\tretainerInvoice = zoho.books.getRecordsByID(\"retainerinvoices\",organization.get(\"organization_id\"),retainerinvoiceId,\"zoho_books\");\n\t\t\tretainerPayments = retainerInvoice.getJSON(\"retainerinvoice\").getJSON(\"payments\");\n\t\t\tif(retainerPayments.size() > 0)\n\t\t\t{\n\t\t\t\tfor each  retainerPayment in retainerPayments\n\t\t\t\t{\n\t\t\t\t\taccountName = retainerPayment.getJSON(\"account_name\");\n\t\t\t\t\t//Make Transaction\n\t\t\t\t\tif(accountName.containsIgnoreCase(\"Trust\"))\n\t\t\t\t\t{\n\t\t\t\t\t\t//\n\t\t\t\t\t\tfromAccountRetPayments = retainerPayment.getJSON(\"account_id\");\n\t\t\t\t\t\tpaymentAmount = retainerPayment.getJSON(\"amount\");\n\t\t\t\t\t\tpaymentDate = retainerPayment.getJSON(\"date\");\n\t\t\t\t\t\tretainerInvoiceNumber = retainerInvoice.getJSON(\"retainerinvoice\").getJSON(\"retainerinvoice_number\");\n\t\t\t\t\t\tcurrencySymbol = retainerInvoice.getJSON(\"retainerinvoice\").getJSON(\"currency_symbol\");\n\t\t\t\t\t\tpaymentAmountFormatted = currencySymbol + paymentAmount;\n\t\t\t\t\t\tdescription = customerName + newLine + \"Invoice Number: \" + invoiceNumber + newLine + paymentAmountFormatted + \" using \" + retainerInvoiceNumber;\n\t\t\t\t\t\t// Transaction Data Map\n\t\t\t\t\t\ttransactionMap = Map();\n\t\t\t\t\t\ttransactionMap.put(\"from_account_id\",fromAccountRetPayments);\n\t\t\t\t\t\ttransactionMap.put(\"to_account_id\",c_needlyAccount);\n\t\t\t\t\t\ttransactionMap.put(\"transaction_type\",c_transactionType);\n\t\t\t\t\t\ttransactionMap.put(\"amount\",paymentAmount.toDecimal());\n\t\t\t\t\t\ttransactionMap.put(\"date\",paymentDate.toDate().toString(\"yyyy-mm-dd\"));\n\t\t\t\t\t\ttransactionMap.put(\"reference_number\",retainerInvoiceNumber);\n\t\t\t\t\t\ttransactionMap.put(\"description\",description);\n\t\t\t\t\t\tresponse = invokeurl\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\turl :\"https://www.zohoapis.com/books/v3/banktransactions?organization_id=\" + c_orgID\n\t\t\t\t\t\t\ttype :POST\n\t\t\t\t\t\t\tparameters:transactionMap.toString()\n\t\t\t\t\t\t\tconnection:\"zoho_books\"\n\t\t\t\t\t\t];\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}\n//info invoicePaymentsResponse;\n//}\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000016237051",
+      "description": "",
+      "drefunction_id": "599957000000610001",
+      "entity": "invoice",
+      "entity_formatted": "Invoice",
+      "function_name": "test_inv_up",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "invoice",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\ninvoiceID = invoice.get(\"invoice_id\");\ninvoicedate = invoice.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\nind = {1,2};\ndataList = List();\nfor each  el in ind\n{\n\telMap = Map();\n\tif(el == 1)\n\t{\n\t\telMap.put(\"salesperson_id\",\"2234095000015070017\");\n\t\telMap.put(\"invoice_id\",\"2234095000015643148\");\n\t\tdataList.add(elMap);\n\t}\n\tif(el == 2)\n\t{\n\t\telMap.put(\"salesperson_id\",\"2234095000010185003\");\n\t\telMap.put(\"invoice_id\",\"2234095000015643102\");\n\t\tdataList.add(elMap);\n\t}\n}\ninfo dataList;\ndata = Map();\ndata.put(\"bulk_update\",true);\ndata.put(\"organization_id\",organization.get(\"organization_id\"));\n//data.put(\"JSONString\",{{\"salesperson_id\":\"2234095000015070017\",\"reason\":\"test\",\"invoice_id\":\"2234095000015643148\"},{\"salesperson_id\":\"2234095000010185003\",\"reason\":\"ss\",\"invoice_id\":\"2234095000015643102\"}});\ndata.put(\"JSONString\",dataList.toList());\nresp = invokeurl\n[\n\turl :\"https://books.zoho.com/api/v3/invoices\"\n\ttype :PUT\n\tparameters:data\n\tconnection:\"zoho_books\"\n];\ninfo resp;\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000017006020",
+      "description": "",
+      "drefunction_id": "599957000000659001",
+      "entity": "customer_payment",
+      "entity_formatted": "Customer Payment",
+      "function_name": "testpayment",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "customer_payment",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\npaymentID = customer_payment.get(\"payment_id\");\norganizationID = organization.get(\"organization_id\");\n*/\ninfo customer_payment.get(\"unused_amount\");\n// paymentMap = Map();\n// paymentMap.put(\"customer_id\", \"2234095000016806001\");\n// paymentMap.put(\"payment_mode\", \"cash\");\n// paymentMap.put(\"amount\", customer_payment.get(\"unused_amount\"));\n// paymentMap.put(\"date\", today);\n// invoicesList = List();\n// invoiceMap = Map();\n// invoiceMap.put(\"invoice_id\", \"2234095000017006028\");\n// invoiceMap.put(\"amount_applied\", customer_payment.get(\"unused_amount\"));\n// invoicesList.add(invoiceMap);\n// paymentMap.put(\"invoices\", invoicesList);\n// paymentMap.put(\"invoice_id\", \"2234095000017006028\");\n// paymentMap.put(\"amount_applied\", customer_payment.get(\"unused_amount\"));\n// newPayment = zoho.books.createRecord(\"customerpayments\", \"713248035\", paymentMap, \"zoho_books\");\n// info newPayment;\ninfo customer_payment.get(\"amount_applied\");\ninfo customer_payment.get(\"payment_id\");\npaymentMap1 = Map();\ninvoicesList = List();\ninvoiceMap = Map();\ninvoiceMap.put(\"invoice_id\",\"2234095000017006081\");\ninvoiceMap.put(\"amount_applied\",100);\ninvoicesList.add(invoiceMap);\ninvoiceMap1 = Map();\ninvoiceMap1.put(\"invoice_id\",\"2234095000017006028\");\ninvoiceMap1.put(\"amount_applied\",100);\ninvoicesList.add(invoiceMap1);\npaymentMap1.put(\"customer_id\",customer_payment.get(\"customer_id\"));\npaymentMap1.put(\"payment_mode\",customer_payment.get(\"payment_mode\"));\npaymentMap1.put(\"amount\",customer_payment.get(\"amount\"));\npaymentMap1.put(\"date\",customer_payment.get(\"date\"));\npaymentMap1.put(\"invoices\",invoicesList);\npaymentMap1.put(\"invoice_id\",\"2234095000017006028\");\npaymentMap1.put(\"amount_applied\",100);\ninfo paymentMap1;\ninfo zoho.books.updateRecord(\"customerpayments\",\"713248035\",customer_payment.get(\"payment_id\"),paymentMap1,\"zoho_books\");\n"
+    },
+    "message": "success"
+  },
+  {
+    "code": 0,
+    "customfunction": {
+      "customfunction_id": "2234095000025918001",
+      "description": "",
+      "drefunction_id": "599957000000954007",
+      "entity": "purchaseorder",
+      "entity_formatted": "Purchase Order",
+      "function_name": "oz_sf_up",
+      "function_param": [
+        {
+          "is_additional_param": false,
+          "param_name": "purchaseorder",
+          "param_order": 1,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "organization",
+          "param_order": 2,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"organization_id\":\"713248035\",\"name\":\"Demo - PDF\",\"time_zone\":\"Europe/Zaporozhye\",\"time_zone_formatted\":\"(GMT 2:00) Eastern European Summer Time (Europe/Zaporozhye)\",\"language_code\":\"en\",\"language_code_formatted\":\"English\",\"date_format\":\"dd MMM yyyy\",\"store_url\":\"\",\"currency_id\":\"2234095000000000097\",\"currency_code\":\"USD\",\"currency_symbol\":\"$\",\"address\":{\"street_address1\":\"\",\"street_address2\":\"\",\"city\":\"\",\"state\":\"\",\"state_code\":\"\",\"country\":\"Ukraine\",\"country_formatted\":\"Ukraine\",\"zip\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"phone\":\"\",\"fax\":\"\",\"website\":\"\",\"email\":\"user4@demo4.crmoz.com\",\"custom_fields\":[{\"index\":1,\"label\":\"\",\"value\":\"\"},{\"index\":2,\"label\":\"\",\"value\":\"\"},{\"index\":3,\"label\":\"\",\"value\":\"\"},{\"index\":4,\"label\":\"\",\"value\":\"\"},{\"index\":5,\"label\":\"\",\"value\":\"\"}],\"custom_field_hash\":{\"cf_1_unformatted\":\"\",\"cf_1\":\"\",\"cf_2_unformatted\":\"\",\"cf_2\":\"\",\"cf_3_unformatted\":\"\",\"cf_3\":\"\",\"cf_4_unformatted\":\"\",\"cf_4\":\"\",\"cf_5_unformatted\":\"\",\"cf_5\":\"\"},\"portal_name\":\"demo713248035\",\"data_center_extension\":\".com\",\"api_root_endpoint\":\"https://www.zohoapis.com/books/v3\"}"
+        },
+        {
+          "is_additional_param": false,
+          "param_name": "user",
+          "param_order": 3,
+          "param_type": "map",
+          "param_value": "${JSONString}",
+          "sample_value": "{\"user_id\":\"2234095000000069001\",\"name\":\"user4 user4\",\"user_role\":\"admin\",\"user_role_formatted\":\"Admin\",\"role_id\":\"2234095000000000619\",\"custom_fields\":[],\"custom_field_hash\":{},\"primary_email\":\"info2@crmoz.com\",\"is_from_delegate_view\":false}"
+        }
+      ],
+      "include_orgvariables_params": false,
+      "language": "deluge",
+      "lock_reason": "",
+      "script": "\n/*\nThis is a sample function. Uncomment to execute or make changes to this function.\npurchaseorderID = purchaseorder.get(\"purchaseorder_id\");\npurchaseorderdate = purchaseorder.get(\"date\").toDate();\norganizationID = organization.get(\"organization_id\");\n*/\n"
+    },
+    "message": "success"
+  }
+]
