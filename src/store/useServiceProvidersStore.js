@@ -59,29 +59,32 @@ export const useServiceProvidersStore = defineStore('browser.tabs', () => {
     }
 
     async function fetchProvidersFromBrowser() {
-        const response = await fetchBrowserTabs()
-        if (!Array.isArray(response)) {
+        const browserTabs = await fetchBrowserTabs()
+        if (!Array.isArray(browserTabs)) {
             return
         }
 
-        const newProviders = response.reduce((acc, item) => {
-            const provider = resolveProviderFromBrowserTab(item)
-            if (!provider?.id || acc[provider?.id]) {
-                return acc
+        const newProviders = []
+
+        for (const tab of browserTabs) {
+            const provider = resolveProviderFromBrowserTab(tab)
+            if (!provider?.id) {
+                continue
             }
 
-            acc[provider.id] = provider
-            return acc
-        }, {})
+            newProviders.push(provider.id)
 
-        Object.keys(providersMap.value).forEach((key) => {
-            if (!newProviders[key]) {
-                providersMap.value[key].disconnect()
+            if (!providersMap.value[provider.id]) {
+                providersMap.value[provider.id] = provider
+                continue
             }
-        })
 
-        Object.assign(providersMap.value, newProviders)
-        cacheProviders()
+            if (!providersMap.value[provider.id].isConnected) {
+                providersMap.value[provider.id].connect(tab)
+            }
+        }
+
+        newProviders.forEach((id) => providersMap.value[id] || providersMap.value[id].disconnect())
     }
 
     async function loadProviders() {
@@ -104,5 +107,6 @@ export const useServiceProvidersStore = defineStore('browser.tabs', () => {
         providersMap,
         connected,
         loadProviders,
+        cacheProviders,
     }
 })

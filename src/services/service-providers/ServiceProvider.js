@@ -1,3 +1,5 @@
+import { ServiceProviderType } from '@/config.js'
+
 export class ServiceProvider {
     tab = null
     metadata = {}
@@ -14,6 +16,10 @@ export class ServiceProvider {
         throw new Error('Not implemented')
     }
 
+    get serviceName() {
+        return ServiceProviderType[this.type] ? ServiceProviderType[this.type].title : this.type
+    }
+
     /**
      * @return string
      */
@@ -25,6 +31,10 @@ export class ServiceProvider {
         return this.type
     }
 
+    get isConnected() {
+        return Boolean(this.tab?.id)
+    }
+
     /**
      * @param tab - browser tab
      * @return ServiceProvider|undefined
@@ -34,12 +44,19 @@ export class ServiceProvider {
         throw new Error('Not implemented')
     }
 
-    get isConnected() {
-        return Boolean(this.tab?.id)
+    connect(tab) {
+        if (!tab) {
+            throw new Error('Invalid tab')
+        }
+        this.tab = tab
     }
 
     disconnect() {
         this.tab = null
+    }
+
+    updateMetadata(partial) {
+        this.metadata = { ...this.metadata, ...partial }
     }
 
     isFunctionSyncRequired(item) {

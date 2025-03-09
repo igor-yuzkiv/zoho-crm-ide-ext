@@ -1,12 +1,12 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import ExplorerItem from '@/components/functions-explorer/ExplorerItem.vue'
 import InputText from 'primevue/inputtext'
+import FunctionListItem from '@/components/functions-list/FunctionListItem.vue'
 
 defineEmits(['click'])
 const props = defineProps({
-    functions: {
+    items: {
         type: Array,
         default: () => [],
     },
@@ -15,7 +15,11 @@ const props = defineProps({
 const route = useRoute()
 const searchQuery = ref()
 const itemsForDisplay = computed(() => {
-    return props.functions
+    if (!searchQuery.value) {
+        return props.items.map((i) => ({ ...i, is_active: route.params?.function_id === i.id }))
+    }
+
+    return props.items
         .filter((i) => {
             if (!searchQuery.value) {
                 return true
@@ -31,16 +35,16 @@ const itemsForDisplay = computed(() => {
 <template>
     <div class="flex h-full flex-col overflow-hidden">
         <div class="flex w-full border-b">
-            <InputText class="w-full rounded-none" v-model.lazy="searchQuery" placeholder="Search"/>
+            <InputText class="w-full rounded-none" v-model.lazy="searchQuery" placeholder="Search" />
         </div>
+
         <div class="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden">
             <ul>
-                <ExplorerItem
-                    v-for="item in itemsForDisplay"
-                    :key="item.id"
-                    :item="item"
-                    @click="$emit('click', item)"
-                />
+                <li v-for="item in itemsForDisplay" :key="item.id" @click="$emit('click', item)">
+                    <slot name="item" :item="item">
+                        <FunctionListItem :item="item" />
+                    </slot>
+                </li>
             </ul>
         </div>
     </div>

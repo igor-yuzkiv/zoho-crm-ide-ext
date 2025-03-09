@@ -32,6 +32,10 @@ export class ZohoFinanceServiceProvider extends ServiceProvider {
         return ServiceProviderType.zoho_finance.name
     }
 
+    get serviceName() {
+        return `Zoho ${capitalize(this.metadata.finance_service)}`
+    }
+
     get id() {
         return `${this.type}-${this.metadata.finance_service}-${this.metadata.org_id}`
     }
@@ -40,7 +44,7 @@ export class ZohoFinanceServiceProvider extends ServiceProvider {
         if (this.metadata?.provider_alias) {
             return this.metadata.provider_alias
         }
-        return `Zoho ${capitalize(this.metadata.finance_service)} (${this.metadata.org_id})`
+        return `${this.serviceName} (${this.metadata.org_id})`
     }
 
     static resolveFromBrowserTab(tab) {
