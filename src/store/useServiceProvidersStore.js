@@ -90,6 +90,7 @@ export const useServiceProvidersStore = defineStore('browser.tabs', () => {
     }
 
     onMounted(() => {
+        //TODO: remove mock api
         if (import.meta.env.VITE_MOCK_API === 'true') {
             return
         }

@@ -27,6 +27,7 @@ export async function fetchCrmFunctions(tabId, orgId, start = 0, limit = 50) {
 const DefaultFetchDetailsQuery = { category: 'automation', source: 'crm', language: 'deluge' }
 
 export async function fetchFunctionDetails(tabId, orgId, functionId, query = DefaultFetchDetailsQuery) {
+    //TODO: remove mock api
     if (import.meta.env.VITE_MOCK_API === 'true') {
         return fetchMockCrmFunctionDetails(functionId)
     }

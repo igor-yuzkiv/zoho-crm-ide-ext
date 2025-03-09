@@ -2,6 +2,7 @@ import { fetchMockBooksFunctions } from '@/api/mock.api.js'
 import { requestWithCookieCsrf } from '@/api/zoho-api-client.js'
 
 export async function fetchZohoFinanceFunctions(tabId, orgId, query = {}, apiVersion = 'v3') {
+    //TODO: remove mock api
     if (import.meta.env.VITE_MOCK_API === 'true') {
         return fetchMockBooksFunctions()
     }
