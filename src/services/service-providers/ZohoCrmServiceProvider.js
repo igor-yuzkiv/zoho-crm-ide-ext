@@ -1,6 +1,6 @@
 import { ServiceProvider } from './ServiceProvider.js'
-import { snakeCase } from 'lodash'
 import { FunctionType, ServiceProviderType } from '@/config.js'
+import { snakeCase } from 'lodash'
 import { fetchCrmFunctions, fetchFunctionDetails } from '@/api/zoho-crm.api.js'
 
 const REGULAR_REGEX = /^(https:\/\/crm\.zoho\.[a-z]{2,})\/crm\/org(\d+)\//
@@ -26,7 +26,7 @@ function normalizeCrmFunctionData(item) {
         api_name: formatCrmFunctionApiName(api_name, display_name),
         display_name,
         metadata,
-        updated_time: Number.isInteger(updatedTime) ? updatedTime : null
+        updated_time: Number.isInteger(updatedTime) ? updatedTime : null,
     }
 
     if (script !== undefined) {
@@ -57,7 +57,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
         if (this.metadata?.name) {
             return this.metadata.name
         }
-        return `${this.metadata.org_id} - CRM ${this.metadata.is_sandbox ? 'Sandbox' : ''}`
+        return `Zoho Crm ${this.metadata.is_sandbox ? 'Sandbox' : ''} (${this.metadata.org_id})`
     }
 
     static resolveFromBrowserTab(tab) {
@@ -85,13 +85,13 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
      * @returns {Promise<{function: Array, has_more: boolean}>}
      */
     async fetchFunctions(page = 1, per_page = 50) {
-        if (!this.tab?.id) {
+        if (!this.tab?.id || !this.metadata?.org_id) {
             return { functions: [], has_more: false }
         }
 
         let start = page <= 1 ? 0 : (page - 1) * per_page + 1
 
-        const response = (await fetchCrmFunctions(this.tab.id, start, per_page)) || []
+        const response = (await fetchCrmFunctions(this.tab.id, this.metadata.org_id, start, per_page)) || []
 
         return {
             functions: response.length ? response.map(normalizeCrmFunctionData) : [],
@@ -104,7 +104,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
      * @returns {Promise<Object>}
      */
     async fetchFunctionDetails(item) {
-        if (!this.tab?.id) {
+        if (!this.tab?.id || !this.metadata?.org_id) {
             return item
         }
 
@@ -113,7 +113,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
             return item
         }
 
-        const response = await fetchFunctionDetails(this.tab.id, id, {
+        const response = await fetchFunctionDetails(this.tab.id, this.metadata.org_id, id, {
             category: metadata.category || 'automation',
             source: metadata.source || 'crm',
             language: metadata.language || 'deluge',

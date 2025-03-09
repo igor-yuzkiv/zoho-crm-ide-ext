@@ -1,4 +1,4 @@
-import '@/plugins/monaco-edtior/monaco-editor-worker.js'
+import '@/plugins/monaco-editor/monaco-editor-worker.js'
 import { install as VueMonacoEditorPlugin } from '@guolao/vue-monaco-editor'
 
 export default function (app) {

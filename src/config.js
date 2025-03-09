@@ -5,6 +5,10 @@ export const ServiceProviderType = {
         name: 'zoho_crm',
         title: 'Zoho CRM',
     },
+    zoho_finance: {
+        name: 'zoho_finance', // books, inventory
+        title: 'Zoho Finance',
+    },
     zoho_creator: {
         name: 'zoho_creator',
         title: 'Zoho Creator',

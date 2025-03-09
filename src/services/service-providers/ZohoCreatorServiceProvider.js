@@ -1,5 +1,5 @@
-import { ServiceProvider } from '@/services/service-providers/ServiceProvider.js'
 import { ServiceProviderType } from '@/config.js'
+import { ServiceProvider } from '@/services/service-providers/ServiceProvider.js'
 
 export class ZohoCreatorServiceProvider extends ServiceProvider {
     constructor(metadata, tab) {
@@ -52,5 +52,10 @@ export class ZohoCreatorServiceProvider extends ServiceProvider {
             functions: [],
             has_more: false,
         }
+    }
+
+    async fetchFunctionDetails(item) {
+        console.warn('ZohoCreatorServiceProvider.fetchFunctionDetails not implemented', { item })
+        return item
     }
 }
