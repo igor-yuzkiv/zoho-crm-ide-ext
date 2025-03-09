@@ -1,7 +1,7 @@
 import { fetchMockBooksFunctions } from '@/api/mock.api.js'
 import { requestWithCookieCsrf } from '@/api/zoho-api-client.js'
 
-export async function fetchZohoFinanceFunctions(tabId, orgId, query = {}) {
+export async function fetchZohoFinanceFunctions(tabId, orgId, query = {}, apiVersion = 'v3') {
     if (import.meta.env.VITE_MOCK_API === 'true') {
         return fetchMockBooksFunctions()
     }
@@ -14,7 +14,7 @@ export async function fetchZohoFinanceFunctions(tabId, orgId, query = {}) {
     }).toString()
 
     const response = await requestWithCookieCsrf(tabId, {
-        url: `/api/v3/integrations/customfunctions?${queryString}`,
+        url: `/api/${apiVersion}/integrations/customfunctions?${queryString}`,
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     }).then((result) => result[0])
@@ -22,7 +22,7 @@ export async function fetchZohoFinanceFunctions(tabId, orgId, query = {}) {
     return response?.result || {}
 }
 
-export async function fetchZohoFinanceFunctionDetails(tabId, orgId, functionId) {
+export async function fetchZohoFinanceFunctionDetails(tabId, orgId, functionId, apiVersion = 'v3') {
     const queryString = new URLSearchParams({
         customfunction_id: functionId,
         // entity: '',
@@ -30,7 +30,7 @@ export async function fetchZohoFinanceFunctionDetails(tabId, orgId, functionId) 
     }).toString()
 
     const response= await requestWithCookieCsrf(tabId, {
-        url: `/api/v3/integrations/customfunctions/editpage?${queryString}`,
+        url: `/api/${apiVersion}/integrations/customfunctions/editpage?${queryString}`,
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     }).then((result) => result[0])

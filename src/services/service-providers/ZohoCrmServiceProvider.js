@@ -36,14 +36,6 @@ function normalizeCrmFunctionData(item) {
 }
 
 export class ZohoCrmServiceProvider extends ServiceProvider {
-    constructor(metadata, tab) {
-        if (!metadata?.org_id) {
-            throw new Error('Invalid Zoho CRM metadata')
-        }
-
-        super(metadata, tab)
-    }
-
     get type() {
         return ServiceProviderType.zoho_crm.name
     }
@@ -53,8 +45,8 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
     }
 
     get title() {
-        if (this.metadata?.name) {
-            return this.metadata.name
+        if (this.metadata?.provider_alias) {
+            return this.metadata.provider_alias
         }
         return `Zoho Crm ${this.metadata.is_sandbox ? 'Sandbox' : ''} (${this.metadata.org_id})`
     }
@@ -78,12 +70,16 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
         }
     }
 
+    isFunctionSyncRequired(item) {
+        return !item?.last_sync_at || item.updated_time !== item.last_sync_at
+    }
+
     /**
      * @param page
      * @param per_page
      * @returns {Promise<{function: Array, has_more: Boolean}>}
      */
-    async fetchFunctions(page = 1, per_page = 50) {
+    async fetchFunctions(page = 1, per_page = 200) {
         if (!this.tab?.id || !this.metadata?.org_id) {
             return { functions: [], has_more: false }
         }
@@ -123,9 +119,10 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
             return item
         }
 
-        if (!normalized?.updated_time) {
-            normalized.updated_time = item?.updated_time || null
-        }
+        const updated_time = normalized?.updated_time || item?.updated_time || null
+
+        item.updated_time = updated_time
+        normalized.last_sync_at = updated_time
 
         return normalized
     }

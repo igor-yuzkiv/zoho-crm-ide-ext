@@ -11,7 +11,7 @@ const workspace = useWorkspaceStore()
     <div class="flex h-8 w-full items-center justify-between bg-gray-100 px-2 dark:bg-gray-800">
         <div class="flex items-center">
             <div class="item">Functions: {{ workspace.functions.length }}</div>
-            <div class="item" @click="workspace.clearCache()">Invalid cache</div>
+            <div class="item" @click="workspace.clearCache()">Clear provider cache</div>
         </div>
 
         <Button

@@ -3,6 +3,11 @@ import { ServiceProvider } from '@/services/service-providers/ServiceProvider.js
 import { capitalize } from 'lodash'
 import { fetchZohoFinanceFunctionDetails, fetchZohoFinanceFunctions } from '@/api/zoho-finance.api.js'
 
+const FinanceServiceApiVersionMap = {
+    books: 'v3',
+    inventory: 'v1',
+}
+
 function normalizeFinanceFunctionData(item) {
     const { customfunction_id, function_name, script } = item
 
@@ -32,8 +37,8 @@ export class ZohoFinanceServiceProvider extends ServiceProvider {
     }
 
     get title() {
-        if (this.metadata?.name) {
-            return this.metadata.name
+        if (this.metadata?.provider_alias) {
+            return this.metadata.provider_alias
         }
         return `Zoho ${capitalize(this.metadata.finance_service)} (${this.metadata.org_id})`
     }
@@ -61,12 +66,21 @@ export class ZohoFinanceServiceProvider extends ServiceProvider {
      * @param per_page
      * @returns {Promise<{function: Array, has_more: Boolean}>}
      */
-    async fetchFunctions(page = 1, per_page = 50) {
+    async fetchFunctions(page = 1, per_page = 200) {
         if (!this.tab?.id || !this.metadata?.org_id) {
             return { functions: [], has_more: false }
         }
 
-        const response = await fetchZohoFinanceFunctions(this.tab.id, this.metadata.org_id, { page, per_page })
+        const response = await fetchZohoFinanceFunctions(
+            this.tab.id,
+            this.metadata.org_id,
+            {
+                page,
+                per_page,
+            },
+            FinanceServiceApiVersionMap[this.metadata.finance_service]
+        )
+
         const { customfunctions, page_context } = response || {}
 
         if (!Array.isArray(customfunctions) || !customfunctions.length) {
@@ -84,10 +98,19 @@ export class ZohoFinanceServiceProvider extends ServiceProvider {
             return item
         }
 
-        const response = await fetchZohoFinanceFunctionDetails(this.tab.id, this.metadata.org_id, item.id).then(
-            ({ customfunction }) => customfunction
-        )
+        const response = await fetchZohoFinanceFunctionDetails(
+            this.tab.id,
+            this.metadata.org_id,
+            item.id,
+            FinanceServiceApiVersionMap[this.metadata.finance_service]
+        ).then(({ customfunction }) => customfunction)
 
-        return response ? normalizeFinanceFunctionData(response) : item
+        if (!response) {
+            return item
+        }
+        const normalized = normalizeFinanceFunctionData(response)
+        normalized.last_sync_at = Date.now()
+
+        return normalized
     }
 }

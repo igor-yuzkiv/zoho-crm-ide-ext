@@ -99,28 +99,16 @@ export const useFunctionsStore = defineStore('functions', () => {
             const functions = getFunctions(provider.id)
 
             setFunctions(provider.id, functions, force)
-            const forSync = functions.filter((item) => !item?.last_sync_at || item.updated_time !== item.last_sync_at)
+            const forSync = functions.filter((item) => provider.isFunctionSyncRequired(item))
 
-            if (!forSync.length) {
-                isLoading.value = false
-                return
+            if (forSync.length) {
+                await Promise.all(chunk(forSync, 10).map((c) => loadFunctionsDetailsChunk(provider, c)))
+                    .then((response) => setFunctions(provider.id, response.flat()))
+                    .catch((e) => console.error('Failed to load functions details', e))
             }
-
-            const promises = chunk(forSync, 10).map((c) => loadFunctionsDetailsChunk(provider, c))
-
-            await Promise.all(promises)
-                .then((response) => {
-                    setFunctions(
-                        provider.id,
-                        response.flat().map((item) => ({ ...item, last_sync_at: item.updated_time || null }))
-                    )
-                })
-                .finally(() => {
-                    console.info('All functions are synced', {count: forSync.length})
-                    isLoading.value = false
-                })
         } catch (e) {
             console.error('Failed to load functions', e)
+        } finally {
             isLoading.value = false
         }
     }

@@ -28,10 +28,13 @@ export async function fetchMockCrmFunctionDetails(id) {
 }
 
 export async function fetchMockBooksFunctions() {
-    const data = await import('@/data/books_functions_list.json')
+    const data = await import('@/data/books_functions_details.json')
     return new Promise((resolve) => {
         setTimeout(() => {
-            resolve(data.default)
+            resolve({
+                customfunctions: data.default.map(({ customfunction }) => customfunction),
+                page_context: { has_more_page: false },
+            })
         }, 500)
     })
 }

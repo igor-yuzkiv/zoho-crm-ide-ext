@@ -10,26 +10,29 @@ async function test() {
 
     const functionsDetails = [];
 
-    // for (const item of workspace.functions) {
-    //     console.log(item);
-    // }
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    const testF = workspace.functions[0];
+    for (const item of workspace.functions) {
+        const response = await fetchZohoFinanceFunctionDetails(
+            workspace.provider.tab.id,
+            workspace.provider.metadata.org_id,
+            item.id
+        )
 
-    const response = await fetchZohoFinanceFunctionDetails(
-        workspace.provider.tab.id,
-        workspace.provider.metadata.org_id,
-        testF.id
-    )
+        if (response) {
+            functionsDetails.push(response);
+        }
 
-    console.log(response);
+        await sleep(200);
+    }
+
+    console.log(functionsDetails);
 }
 </script>
 <template>
     <div class="flex h-full w-full flex-col items-center justify-center">
-        <div class="text-4xl text-gray-500">
+        <div class="text-4xl text-gray-500" @click="test">
             Function not selected
-            <Button @click="test">Test</Button>
         </div>
     </div>
 </template>

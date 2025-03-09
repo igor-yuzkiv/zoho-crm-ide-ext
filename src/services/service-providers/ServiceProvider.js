@@ -1,19 +1,25 @@
 export class ServiceProvider {
     tab = null
     metadata = {}
-    isConnected = false
+    // isConnected = false
 
     constructor(metadata, tab) {
         this.metadata = metadata
         this.tab = tab
 
-        this.isConnected = Boolean(tab?.id)
+        // this.isConnected = Boolean(tab?.id)
     }
 
+    /**
+     * @return string
+     */
     get type() {
         throw new Error('Not implemented')
     }
 
+    /**
+     * @return string
+     */
     get id() {
         throw new Error('Not implemented')
     }
@@ -22,17 +28,26 @@ export class ServiceProvider {
         return this.type
     }
 
-    disconnect() {
-        this.tab = null
-        this.isConnected = false
-    }
-
     /**
+     * @param tab - browser tab
      * @return ServiceProvider|undefined
      */
     //eslint-disable-next-line
     static resolveFromBrowserTab(tab) {
         throw new Error('Not implemented')
+    }
+
+    get isConnected() {
+        return Boolean(this.tab?.id)
+    }
+
+    disconnect() {
+        this.tab = null
+        // this.isConnected = false
+    }
+
+    isFunctionSyncRequired(item) {
+        return !item?.script
     }
 
     /**
