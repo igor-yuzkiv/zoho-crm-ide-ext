@@ -8,6 +8,7 @@ import { useRoute, useRouter } from 'vue-router'
 import Tab from 'primevue/tab'
 import TabList from 'primevue/tablist'
 import Tabs from 'primevue/tabs'
+import RefreshButton from '@/components/refresh-button/RefreshButton.vue'
 
 const EditorContentConfig = {
     code: { language: 'javascript', getValue: () => selectedFunction.value?.script || '// No function code found' },
@@ -32,11 +33,18 @@ const workspace = useWorkspaceStore()
 const functionsStore = useFunctionsStore()
 
 const selectedFunction = computed(() => {
-    return functionsStore.getFunctions(workspace.provider?.id).find((item) => item.id === route.params?.function_id) || null
+    return (
+        functionsStore.getFunctions(workspace.provider?.id).find((item) => item.id === route.params?.function_id) ||
+        null
+    )
 })
 
 const currentView = ref('code')
 const editorState = reactive({ language: 'javascript', value: '' })
+
+function onClickRefreshFunction() {
+    functionsStore.refreshFunction(workspace.provider, selectedFunction.value)
+}
 
 watchEffect(() => {
     if (!selectedFunction.value) {
@@ -60,7 +68,14 @@ onBeforeMount(() => {
         <div
             class="flex-0 flex w-full items-center justify-between border-b border-gray-200 px-2 font-bold dark:border-gray-500 dark:bg-gray-800"
         >
-            <div>{{ selectedFunction?.api_name }} | {{ selectedFunction?.type }}</div>
+            <div class="flex items-center gap-x-1">
+                <RefreshButton
+                    :loading="functionsStore.isLoading"
+                    @click="onClickRefreshFunction"
+                />
+
+                <div>{{ selectedFunction?.api_name }} | {{ selectedFunction?.type }}</div>
+            </div>
 
             <Tabs :value="currentView">
                 <TabList>

@@ -6,11 +6,10 @@ import { useServiceProvidersStore } from '@/store/useServiceProvidersStore.js'
 import { useWorkspaceStore } from '@/store/useWorkspaceStore.js'
 import { onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
-import { Icon } from '@iconify/vue'
 import BottomBar from '@/components/bottom-bar/BottomBar.vue'
 import FunctionsExplorer from '@/components/functions-explorer/FunctionsExplorer.vue'
 import ProviderSelect from '@/components/provider-select/ProviderSelect.vue'
+import RefreshButton from '@/components/refresh-button/RefreshButton.vue'
 import TopBarMenu from '@/components/top-bar-menu/TopBarMenu.vue'
 
 const router = useRouter()
@@ -52,19 +51,10 @@ onBeforeMount(async () => {
                         @update:model-value="onSelectProvider"
                         :disabled="workspace.isLoading || functionsStore.isLoading"
                     />
-                    <Button text icon="" @click="workspace.refresh()">
-                        <template #icon>
-                            <Icon
-                                :icon="
-                                    workspace.isLoading || functionsStore.isLoading
-                                        ? 'eos-icons:spinner'
-                                        : 'ic:twotone-refresh'
-                                "
-                                class="h-5 w-5"
-                                :class="{ 'animate-spin': workspace.isLoading || functionsStore.isLoading }"
-                            />
-                        </template>
-                    </Button>
+                    <RefreshButton
+                        :loading="workspace.isLoading || functionsStore.isLoading"
+                        @click="workspace.refresh()"
+                    />
                 </div>
             </template>
         </TopBarMenu>

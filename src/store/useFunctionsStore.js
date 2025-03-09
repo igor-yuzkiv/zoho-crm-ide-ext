@@ -113,12 +113,12 @@ export const useFunctionsStore = defineStore('functions', () => {
         }
     }
 
-    async function refreshFunction(provider, functionId) {
+    async function refreshFunction(provider, functionObject) {
         try {
             isLoading.value = true
-            const response = await provider.fetchFunctionDetails(functionId)
+            const response = await provider.fetchFunctionDetails(functionObject)
             if (response) {
-                setFunctions(provider.id, [response], true)
+                setFunctions(provider.id, [response], false)
             }
         } catch (e) {
             console.error('Failed to refresh function', e)

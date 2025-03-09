@@ -79,7 +79,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
      * @param per_page
      * @returns {Promise<{function: Array, has_more: Boolean}>}
      */
-    async fetchFunctions(page = 1, per_page = 200) {
+    async fetchFunctions(page = 1, per_page = 50) {
         if (!this.tab?.id || !this.metadata?.org_id) {
             return { functions: [], has_more: false }
         }
@@ -121,7 +121,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
 
         const updated_time = normalized?.updated_time || item?.updated_time || null
 
-        item.updated_time = updated_time
+        normalized.updated_time = updated_time
         normalized.last_sync_at = updated_time
 
         return normalized

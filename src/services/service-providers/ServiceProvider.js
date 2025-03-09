@@ -1,13 +1,10 @@
 export class ServiceProvider {
     tab = null
     metadata = {}
-    // isConnected = false
 
     constructor(metadata, tab) {
         this.metadata = metadata
         this.tab = tab
-
-        // this.isConnected = Boolean(tab?.id)
     }
 
     /**
@@ -43,7 +40,6 @@ export class ServiceProvider {
 
     disconnect() {
         this.tab = null
-        // this.isConnected = false
     }
 
     isFunctionSyncRequired(item) {
