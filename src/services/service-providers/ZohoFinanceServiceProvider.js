@@ -1,6 +1,26 @@
-import { ServiceProviderType } from '@/config.js'
+import { FunctionType, ServiceProviderType } from '@/config.js'
 import { ServiceProvider } from '@/services/service-providers/ServiceProvider.js'
 import { capitalize } from 'lodash'
+import { fetchZohoFinanceFunctionDetails, fetchZohoFinanceFunctions } from '@/api/zoho-finance.api.js'
+
+function normalizeFinanceFunctionData(item) {
+    const { customfunction_id, function_name, script } = item
+
+    const result = {
+        id: customfunction_id,
+        type: FunctionType.automation,
+        api_name: function_name,
+        display_name: function_name,
+        updated_time: null,
+        metadata: item,
+    }
+
+    if (script !== undefined) {
+        result.script = script
+    }
+
+    return result
+}
 
 export class ZohoFinanceServiceProvider extends ServiceProvider {
     get type() {
@@ -39,18 +59,35 @@ export class ZohoFinanceServiceProvider extends ServiceProvider {
     /**
      * @param page
      * @param per_page
-     * @returns {Promise<{function: Array, has_more: boolean}>}
+     * @returns {Promise<{function: Array, has_more: Boolean}>}
      */
     async fetchFunctions(page = 1, per_page = 50) {
-        console.warn('ZohoFinanceServiceProvider.fetchFunctions not implemented', { page, per_page })
+        if (!this.tab?.id || !this.metadata?.org_id) {
+            return { functions: [], has_more: false }
+        }
+
+        const response = await fetchZohoFinanceFunctions(this.tab.id, this.metadata.org_id, { page, per_page })
+        const { customfunctions, page_context } = response || {}
+
+        if (!Array.isArray(customfunctions) || !customfunctions.length) {
+            return { functions: [], has_more: false }
+        }
+
         return {
-            functions: [],
-            has_more: false,
+            functions: customfunctions.map(normalizeFinanceFunctionData),
+            has_more: page_context?.has_more_page || false,
         }
     }
 
     async fetchFunctionDetails(item) {
-        console.warn('ZohoFinanceServiceProvider.fetchFunctionDetails not implemented', { item })
-        return item
+        if (!this.tab?.id || !this.metadata?.org_id || !item?.id) {
+            return item
+        }
+
+        const response = await fetchZohoFinanceFunctionDetails(this.tab.id, this.metadata.org_id, item.id).then(
+            ({ customfunction }) => customfunction
+        )
+
+        return response ? normalizeFinanceFunctionData(response) : item
     }
 }

@@ -1,5 +1,9 @@
 import { ServiceProviderType } from '@/config.js'
-import { ZohoFinanceServiceProvider, ZohoCrmServiceProvider } from '@/services/service-providers/index.js'
+import {
+    ZohoCreatorServiceProvider,
+    ZohoCrmServiceProvider,
+    ZohoFinanceServiceProvider,
+} from '@/services/service-providers/index.js'
 import localStorageUtil from '@/utils/local-storage.util.js'
 import { defineStore } from 'pinia'
 import { computed, onMounted, ref } from 'vue'
@@ -7,6 +11,7 @@ import { fetchMockChromeTabsQuery } from '@/api/mock.api.js'
 
 const PROVIDERS = {
     [ServiceProviderType.zoho_crm.name]: ZohoCrmServiceProvider,
+    [ServiceProviderType.zoho_creator.name]: ZohoCreatorServiceProvider,
     [ServiceProviderType.zoho_finance.name]: ZohoFinanceServiceProvider,
 }
 

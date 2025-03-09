@@ -10,22 +10,16 @@ export class ServiceProvider {
         this.isConnected = Boolean(tab?.id)
     }
 
-    /**
-     * @returns {string}
-     */
     get type() {
         throw new Error('Not implemented')
     }
 
-    /**
-     * @returns {string}
-     */
     get id() {
         throw new Error('Not implemented')
     }
 
     get title() {
-        return this.tab?.title || ''
+        return this.type
     }
 
     disconnect() {
@@ -34,7 +28,7 @@ export class ServiceProvider {
     }
 
     /**
-     * @return ServiceProvider
+     * @return ServiceProvider|undefined
      */
     //eslint-disable-next-line
     static resolveFromBrowserTab(tab) {
@@ -44,22 +38,18 @@ export class ServiceProvider {
     /**
      * @param page
      * @param per_page
-     * @returns {Promise<{function: Array, has_more: boolean}>}
+     * @returns {Promise<{function: Array, has_more: Boolean}>}
      */
-    //eslint-disable-next-line
     async fetchFunctions(page = 1, per_page = 50) {
-        throw new Error('Not implemented')
+        console.warn(`ServiceProvider[${this.type}].fetchFunctions not implemented`, { page, per_page })
+        return {
+            functions: [],
+            has_more: false,
+        }
     }
 
-    /**
-     * @param item
-     * @returns {Promise<Object>}
-     */
     async fetchFunctionDetails(item) {
-        console.warn('ServiceProvider.fetchFunctionDetails not implemented', {
-            type: this.type,
-            item,
-        })
+        console.warn(`ServiceProvider[${this.type}].fetchFunctionDetails not implemented`, { item })
         return item
     }
 }

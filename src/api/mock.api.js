@@ -26,3 +26,12 @@ export async function fetchMockCrmFunctionDetails(id) {
         }, 500)
     })
 }
+
+export async function fetchMockBooksFunctions() {
+    const data = await import('@/data/books_functions_list.json')
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(data.default)
+        }, 500)
+    })
+}

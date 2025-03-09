@@ -40,22 +40,4 @@ export class ZohoCreatorServiceProvider extends ServiceProvider {
 
         return new ZohoCreatorServiceProvider({ host, owner_name, application_name }, tab)
     }
-
-    /**
-     * @param page
-     * @param per_page
-     * @returns {Promise<{function: Array, has_more: boolean}>}
-     */
-    async fetchFunctions(page = 1, per_page = 50) {
-        console.warn('ZohoCreatorServiceProvider.fetchFunctions not implemented', { page, per_page })
-        return {
-            functions: [],
-            has_more: false,
-        }
-    }
-
-    async fetchFunctionDetails(item) {
-        console.warn('ZohoCreatorServiceProvider.fetchFunctionDetails not implemented', { item })
-        return item
-    }
 }

@@ -22,11 +22,10 @@ function normalizeCrmFunctionData(item) {
     const result = {
         id,
         type: FunctionType[category] || FunctionType.unknown,
-        category,
         api_name: formatCrmFunctionApiName(api_name, display_name),
         display_name,
-        metadata,
         updated_time: Number.isInteger(updatedTime) ? updatedTime : null,
+        metadata,
     }
 
     if (script !== undefined) {
@@ -82,7 +81,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
     /**
      * @param page
      * @param per_page
-     * @returns {Promise<{function: Array, has_more: boolean}>}
+     * @returns {Promise<{function: Array, has_more: Boolean}>}
      */
     async fetchFunctions(page = 1, per_page = 50) {
         if (!this.tab?.id || !this.metadata?.org_id) {
