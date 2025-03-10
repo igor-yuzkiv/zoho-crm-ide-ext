@@ -45,6 +45,10 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     }
 
     async function refresh(clearCache = false) {
+        if (!provider.value || !provider.value.isConnected) {
+            return
+        }
+
         if (clearCache) {
             functionsStore.clearCache(provider.value.id)
         }

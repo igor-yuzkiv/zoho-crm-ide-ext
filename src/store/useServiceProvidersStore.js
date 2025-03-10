@@ -59,12 +59,12 @@ export const useServiceProvidersStore = defineStore('browser.tabs', () => {
     }
 
     async function fetchProvidersFromBrowser() {
-        const response = await fetchBrowserTabs()
-        if (!Array.isArray(response)) {
+        const browserTabs = await fetchBrowserTabs()
+        if (!Array.isArray(browserTabs)) {
             return
         }
 
-        const newProviders = response.reduce((acc, tab) => {
+        const newProviders = browserTabs.reduce((acc, tab) => {
             const provider = resolveProviderFromBrowserTab(tab)
             if (!provider?.id || acc[provider?.id]) {
                 return acc
