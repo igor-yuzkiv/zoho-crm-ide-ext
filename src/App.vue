@@ -16,6 +16,7 @@ import GlobalSearchDialog from '@/components/global-search-dialog/GlobalSearchDi
 import ProviderSelect from '@/components/provider-select/ProviderSelect.vue'
 import RefreshButton from '@/components/refresh-button/RefreshButton.vue'
 import SettingsDialog from '@/components/settings-dialog/SettingsDialog.vue'
+import CommitDialog from '@/components/commit-dialog/CommitDialog.vue'
 
 const tobBarMenuItems = [
     {
@@ -32,7 +33,7 @@ const tobBarMenuItems = [
     },
     {
         label: 'Commit',
-        command: () => console.log("Click: 'Commit'"),
+        command: () => (isVisibleCommitDialog.value = true),
     },
 ]
 
@@ -44,6 +45,7 @@ const workspace = useWorkspaceStore()
 
 const isVisibleSearchDialog = ref(false)
 const isVisibleSettingsDialog = ref(false)
+const isVisibleCommitDialog = ref(false)
 
 function onFunctionClick(item) {
     if (workspace.isLoading || functionsStore.isLoading) {
@@ -113,6 +115,7 @@ onBeforeMount(async () => {
         </div>
     </div>
 
+    <CommitDialog v-model:visible="isVisibleCommitDialog" />
     <SettingsDialog v-model:visible="isVisibleSettingsDialog" />
     <GlobalSearchDialog v-model:visible="isVisibleSearchDialog" />
     <Toast />

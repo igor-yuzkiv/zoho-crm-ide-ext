@@ -9,7 +9,7 @@ const props = defineProps({
     items: {
         type: Array,
         default: () => [],
-    },
+},
 })
 
 const route = useRoute()

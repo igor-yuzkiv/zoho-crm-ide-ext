@@ -8,8 +8,8 @@ const FinanceServiceApiVersionMap = {
     inventory: 'v1',
 }
 
-function normalizeFinanceFunctionData(item) {
-    const { customfunction_id, function_name, script } = item
+function normalizeFinanceFunctionData(item, provider_id) {
+    const { customfunction_id, function_name, script, ...metadata } = item
 
     const result = {
         id: customfunction_id,
@@ -17,7 +17,8 @@ function normalizeFinanceFunctionData(item) {
         api_name: function_name,
         display_name: function_name,
         updated_time: null,
-        metadata: item,
+        metadata,
+        provider_id
     }
 
     if (script !== undefined) {
@@ -92,7 +93,7 @@ export class ZohoFinanceServiceProvider extends ServiceProvider {
         }
 
         return {
-            functions: customfunctions.map(normalizeFinanceFunctionData),
+            functions: customfunctions.map(normalizeFinanceFunctionData, this.id),
             has_more: page_context?.has_more_page || false,
         }
     }
@@ -112,7 +113,7 @@ export class ZohoFinanceServiceProvider extends ServiceProvider {
         if (!response) {
             return item
         }
-        const normalized = normalizeFinanceFunctionData(response)
+        const normalized = normalizeFinanceFunctionData(response, this.id)
         normalized.last_sync_at = Date.now()
 
         return normalized

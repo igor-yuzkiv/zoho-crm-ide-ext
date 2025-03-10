@@ -16,7 +16,7 @@ function formatCrmFunctionApiName(api_name, display_name) {
     return api_name || 'unknown_function'
 }
 
-function normalizeCrmFunctionData(item) {
+function normalizeCrmFunctionData(item, provider_id) {
     const { id, api_name, category, display_name, script, updatedTime, ...metadata } = item
 
     const result = {
@@ -26,6 +26,7 @@ function normalizeCrmFunctionData(item) {
         display_name,
         updated_time: Number.isInteger(updatedTime) ? updatedTime : null,
         metadata,
+        provider_id
     }
 
     if (script !== undefined) {
@@ -89,7 +90,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
         const response = (await fetchCrmFunctions(this.tab.id, this.metadata.org_id, start, per_page)) || []
 
         return {
-            functions: response.length ? response.map(normalizeCrmFunctionData) : [],
+            functions: response.length ? response.map(normalizeCrmFunctionData, this.id) : [],
             has_more: response.length >= per_page,
         }
     }
@@ -114,7 +115,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
             language: metadata.language || 'deluge',
         })
 
-        const normalized = normalizeCrmFunctionData(response)
+        const normalized = normalizeCrmFunctionData(response, this.id)
         if (!normalized) {
             return item
         }

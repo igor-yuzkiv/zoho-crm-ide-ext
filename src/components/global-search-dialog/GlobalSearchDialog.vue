@@ -1,5 +1,4 @@
 <script setup>
-import { FunctionTypeMeta } from '@/config/index.js'
 import { AppRouteName } from '@/router.js'
 import { useFunctionsStore } from '@/store/useFunctionsStore.js'
 import { useServiceProvidersStore } from '@/store/useServiceProvidersStore.js'
@@ -11,6 +10,7 @@ import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import SelectButton from 'primevue/selectbutton'
+import { FunctionTypeMeta } from '@/config/index.js'
 import CodeBlock from '@/components/code-block/CodeBlock.vue'
 import FunctionIcon from '@/components/functions/FunctionIcon.vue'
 import RefreshButton from '@/components/refresh-button/RefreshButton.vue'
@@ -37,30 +37,28 @@ const searchResults = ref([])
 const selectedFunction = ref(null)
 const codePreview = ref('')
 
-const mapFunctionItem = (provider_id, item) => ({
+const mapFunctionItem = (item) => ({
     id: item.id,
     api_name: item.api_name,
     script: item?.script,
-    provider_id,
-    provider_name: providersStore.providersMap[provider_id]?.title || 'Unknown Provider',
+    provider_id: item.provider_id,
+    provider_name: providersStore.providersMap[item.provider_id]?.title || 'Unknown Provider',
     type: item.type,
     matchIndex: -1,
     matchedLine: '',
 })
 
 const functionsForSearch = computed(() => {
-    return Object.entries(functionsStore.functionPerProvider).flatMap(([provider_id, functions]) =>
-        functions.map((i) => mapFunctionItem(provider_id, i))
-    )
+    return Object.values(functionsStore.functionPerProvider).flat().map(mapFunctionItem)
 })
 
 function getMatchingLines(script, matchIndex, contextLines = 1) {
-    if (!script || matchIndex < 0) return null;
+    if (!script || matchIndex < 0) return null
 
-    const lines = script.split('\n');
-    let lineIndex = script.slice(0, matchIndex).split('\n').length - 1;
+    const lines = script.split('\n')
+    let lineIndex = script.slice(0, matchIndex).split('\n').length - 1
 
-    return lines.slice(Math.max(0, lineIndex - contextLines), lineIndex + contextLines + 1).join('\n');
+    return lines.slice(Math.max(0, lineIndex - contextLines), lineIndex + contextLines + 1).join('\n')
 }
 
 function executeSearch() {
@@ -77,7 +75,9 @@ function executeSearch() {
                 (!selectedFunctionType.value || i.type === selectedFunctionType.value)
         )
         .map((i) => {
-            const index = searchRegex ? i.script.search(searchRegex) : i.script.toLowerCase().indexOf(searchInput.value.toLowerCase())
+            const index = searchRegex
+                ? i.script.search(searchRegex)
+                : i.script.toLowerCase().indexOf(searchInput.value.toLowerCase())
 
             return index !== -1 ? { ...i, matchIndex: index, matchedLine: getMatchingLines(i.script, index, 0) } : null
         })
@@ -117,8 +117,8 @@ async function onClickJumpToFunction() {
         header="Search"
         v-model:visible="visible"
         modal
-        class="w-[98%] border-none lg:w-3/4"
         :draggable="false"
+        class="w-[98%] border-none lg:w-2/4 xl:w-2/4"
         :pt="{ header: { class: 'p-2' }, footer: { class: 'p-2 bg-gray-100 dark:bg-black rounded-b-lg' } }"
         content-class="p-0 overflow-hidden flex flex-col"
     >
