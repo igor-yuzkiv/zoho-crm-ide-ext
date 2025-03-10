@@ -1,4 +1,4 @@
-import { ServiceProviderType } from '@/config.js'
+import { ServiceProviderType } from '@/config/index.js'
 import {
     ZohoCreatorServiceProvider,
     ZohoCrmServiceProvider,

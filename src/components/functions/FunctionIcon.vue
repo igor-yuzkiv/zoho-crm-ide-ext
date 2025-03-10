@@ -1,5 +1,5 @@
 <script setup>
-import { FunctionTypeMeta } from '@/config.js'
+import { FunctionTypeMeta } from '@/config/index.js'
 import { Icon } from '@iconify/vue'
 
 defineProps({ type: String })

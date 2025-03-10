@@ -5,25 +5,31 @@ import { useFunctionsStore } from '@/store/useFunctionsStore.js'
 import { useWorkspaceStore } from '@/store/useWorkspaceStore.js'
 import { computed, onBeforeMount, reactive, ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Tab from 'primevue/tab'
-import TabList from 'primevue/tablist'
-import Tabs from 'primevue/tabs'
+import Button from 'primevue/button'
+import Select from 'primevue/select'
+import templates from '@/config/templates/index.js'
 import RefreshButton from '@/components/refresh-button/RefreshButton.vue'
 
 const EditorContentConfig = {
-    code: { language: 'javascript', getValue: () => selectedFunction.value?.script || '// No function code found' },
-    documentation: {
-        language: 'markdown',
-        getValue: () => selectedFunction.value?.documentation || '**No documentation found!**',
+    code: {
+        label: 'Code',
+        name: 'code',
+        language: 'javascript',
+        getValue: () => selectedFunction.value?.script || '// No function code found',
     },
-    metadata: { language: 'json', getValue: () => JSON.stringify(selectedFunction.value, null, 2) },
+    documentation: {
+        label: 'Documentation',
+        name: 'documentation',
+        language: 'markdown',
+        getValue: () => selectedFunction.value?.documentation || templates.functionDoc,
+    },
+    metadata: {
+        label: 'Metadata',
+        name: 'metadata',
+        language: 'json',
+        getValue: () => JSON.stringify(selectedFunction.value, null, 2),
+    },
 }
-
-const ViewItems = [
-    { title: 'Code', name: 'code' },
-    { title: 'Documentation', name: 'documentation' },
-    { title: 'Metadata', name: 'metadata' },
-]
 
 const router = useRouter()
 const route = useRoute()
@@ -46,8 +52,18 @@ function onClickRefreshFunction() {
     functionsStore.refreshFunction(workspace.provider, selectedFunction.value)
 }
 
+function onClickSaveDocumentation() {
+    functionsStore.setFunctions(workspace.provider.id, [
+        {
+            ...selectedFunction.value,
+            documentation: editorState.value,
+        },
+    ])
+}
+
 watchEffect(() => {
     if (!selectedFunction.value) {
+        router.push({ name: AppRouteName.home }).catch(console.error)
         return
     }
 
@@ -57,7 +73,7 @@ watchEffect(() => {
 })
 
 onBeforeMount(() => {
-    if (!workspace.provider?.id) {
+    if (!workspace.provider?.id || !selectedFunction.value) {
         router.push({ name: AppRouteName.home })
     }
 })
@@ -66,30 +82,31 @@ onBeforeMount(() => {
 <template>
     <div class="flex h-full w-full flex-col overflow-hidden" v-if="selectedFunction">
         <div
-            class="flex-0 flex w-full items-center justify-between border-b border-gray-200 px-2 font-bold dark:border-gray-500 dark:bg-gray-800"
+            class="flex-0 flex w-full items-center justify-between border-b border-gray-200 px-1 font-bold dark:border-gray-500 dark:bg-gray-800"
         >
             <div class="flex items-center gap-x-1">
-                <RefreshButton
-                    :loading="functionsStore.isLoading"
-                    @click="onClickRefreshFunction"
-                />
+                <RefreshButton :loading="functionsStore.isLoading" @click="onClickRefreshFunction" />
 
                 <div>{{ selectedFunction?.api_name }} | {{ selectedFunction?.type }}</div>
             </div>
 
-            <Tabs :value="currentView">
-                <TabList>
-                    <Tab
-                        class="px-2 py-1 dark:bg-gray-800"
-                        v-for="item in ViewItems"
-                        :key="item.name"
-                        :value="item.name"
-                        @click="currentView = item.name"
-                    >
-                        {{ item.title }}
-                    </Tab>
-                </TabList>
-            </Tabs>
+            <div class="flex items-center gap-x-1">
+                <Button
+                    text
+                    v-if="currentView === 'documentation'"
+                    icon="pi pi-save"
+                    size="small"
+                    @click="onClickSaveDocumentation"
+                />
+                <Select
+                    v-model="currentView"
+                    :options="Object.values(EditorContentConfig)"
+                    class="border-none shadow-none"
+                    size="small"
+                    option-label="label"
+                    option-value="name"
+                />
+            </div>
         </div>
 
         <div class="flex-coll flex flex-1 overflow-auto">

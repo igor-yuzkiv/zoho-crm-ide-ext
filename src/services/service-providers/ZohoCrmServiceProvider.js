@@ -1,5 +1,5 @@
 import { ServiceProvider } from './ServiceProvider.js'
-import { FunctionType, ServiceProviderType } from '@/config.js'
+import { FunctionType, ServiceProviderType } from '@/config/index.js'
 import { snakeCase } from 'lodash'
 import { fetchCrmFunctions, fetchFunctionDetails } from '@/api/zoho-crm.api.js'
 

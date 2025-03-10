@@ -1,5 +1,5 @@
 <script setup>
-import { FunctionTypeMeta } from '@/config.js'
+import { FunctionTypeMeta } from '@/config/index.js'
 import { AppRouteName } from '@/router.js'
 import { useFunctionsStore } from '@/store/useFunctionsStore.js'
 import { useServiceProvidersStore } from '@/store/useServiceProvidersStore.js'
@@ -16,8 +16,8 @@ import FunctionIcon from '@/components/functions/FunctionIcon.vue'
 import RefreshButton from '@/components/refresh-button/RefreshButton.vue'
 
 const searchScopeOptions = [
-    { label: 'Current Provider', key: 'current' },
-    { label: 'All Providers', key: 'all' },
+    { label: 'Current Provider', name: 'current' },
+    { label: 'All Providers', name: 'all' },
 ]
 
 const visible = defineModel('visible', { type: Boolean })
@@ -198,7 +198,7 @@ async function onClickJumpToFunction() {
                     class="bg-transparent"
                     size="small"
                     option-label="label"
-                    option-value="key"
+                    option-value="name"
                 />
             </div>
         </template>

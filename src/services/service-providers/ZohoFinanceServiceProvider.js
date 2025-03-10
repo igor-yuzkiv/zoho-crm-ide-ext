@@ -1,4 +1,4 @@
-import { FunctionType, ServiceProviderType } from '@/config.js'
+import { FunctionType, ServiceProviderType } from '@/config/index.js'
 import { ServiceProvider } from '@/services/service-providers/ServiceProvider.js'
 import { capitalize } from 'lodash'
 import { fetchZohoFinanceFunctionDetails, fetchZohoFinanceFunctions } from '@/api/zoho-finance.api.js'

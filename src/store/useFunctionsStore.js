@@ -1,4 +1,4 @@
-import { CACHE_TTL } from '@/config.js'
+import { CACHE_TTL } from '@/config/index.js'
 import localStorageUtil from '@/utils/local-storage.util.js'
 import { chunk } from 'lodash'
 import { defineStore } from 'pinia'
@@ -150,5 +150,6 @@ export const useFunctionsStore = defineStore('functions', () => {
         loadFunctions,
         loadCachedFunction,
         refreshFunction,
+        setFunctions,
     }
 })
