@@ -2,11 +2,13 @@ import { CACHE_TTL } from '@/config.js'
 import localStorageUtil from '@/utils/local-storage.util.js'
 import { chunk } from 'lodash'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export const useFunctionsStore = defineStore('functions', () => {
     const functionPerProvider = ref({})
     const isLoading = ref(false)
+
+    const allFunction = computed(() => Object.values(functionPerProvider).flat())
 
     function cacheFunctions(providerId, items) {
         if (!providerId || !items.length) {
@@ -130,6 +132,7 @@ export const useFunctionsStore = defineStore('functions', () => {
     return {
         isLoading,
         functionPerProvider,
+        allFunction,
         getFunctions,
         hasFunctions,
         loadFunctions,

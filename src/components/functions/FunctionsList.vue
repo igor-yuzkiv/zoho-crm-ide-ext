@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import InputText from 'primevue/inputtext'
-import FunctionListItem from '@/components/functions-list/FunctionListItem.vue'
+import FunctionListItem from '@/components/functions/FunctionListItem.vue'
 
 defineEmits(['click'])
 const props = defineProps({

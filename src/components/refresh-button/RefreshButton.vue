@@ -7,6 +7,14 @@ defineProps({
         type: Boolean,
         required: true,
     },
+    icon: {
+        type: String,
+        default: 'ic:twotone-refresh',
+    },
+    loadingIcon: {
+        type: String,
+        default: 'eos-icons:spinner',
+    }
 })
 </script>
 
@@ -14,7 +22,7 @@ defineProps({
     <Button text icon="" :disabled="loading">
         <template #icon>
             <Icon
-                :icon="loading ? 'eos-icons:spinner' : 'ic:twotone-refresh'"
+                :icon="loading ? loadingIcon : icon"
                 class="h-5 w-5"
                 :class="{ 'animate-spin': loading }"
             />

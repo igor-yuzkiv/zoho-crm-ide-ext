@@ -80,7 +80,7 @@ onBeforeMount(() => {
             <Tabs :value="currentView">
                 <TabList>
                     <Tab
-                        class="px-2 py-1"
+                        class="px-2 py-1 dark:bg-gray-800"
                         v-for="item in ViewItems"
                         :key="item.name"
                         :value="item.name"

@@ -17,8 +17,9 @@ export const useWorkspaceStore = defineStore('workspace', () => {
 
     const isLoading = ref(false)
     const currentProviderId = ref()
-    const provider = computed(() => providersStore.providersMap[currentProviderId.value])
+    const provider = computed(() => providersStore.providersMap[currentProviderId.value] || null)
     const functions = computed(() => functionsStore.getFunctions(currentProviderId.value))
+
 
     async function refresh() {
         await providersStore.loadProviders();

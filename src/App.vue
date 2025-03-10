@@ -11,10 +11,10 @@ import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Menubar from 'primevue/menubar'
 import Toast from 'primevue/toast'
-import FunctionsList from '@/components/functions-list/FunctionsList.vue'
+import FunctionsList from '@/components/functions/FunctionsList.vue'
 import ProviderSelect from '@/components/provider-select/ProviderSelect.vue'
 import RefreshButton from '@/components/refresh-button/RefreshButton.vue'
-import GlobalSearchDialog from '@/components/search-dialog/GlobalSearchDialog.vue'
+import GlobalSearchDialog from '@/components/global-search-dialog/GlobalSearchDialog.vue'
 import SettingsDialog from '@/components/settings-dialog/SettingsDialog.vue'
 
 const tobBarMenuItems = [

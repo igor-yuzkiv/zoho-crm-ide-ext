@@ -1,7 +1,5 @@
 <script setup>
-import { computed } from 'vue'
-import { Icon } from '@iconify/vue'
-import { FunctionTypeMeta } from '@/config.js'
+import FunctionIcon from '@/components/functions/FunctionIcon.vue'
 
 const props = defineProps({
     item: {
@@ -9,9 +7,6 @@ const props = defineProps({
         default: () => ({}),
     },
 })
-
-const itemIcon = computed(() => FunctionTypeMeta[props.item.type]?.icon || FunctionTypeMeta.unknown.icon)
-const itemColor = computed(() => FunctionTypeMeta[props.item.type]?.color || FunctionTypeMeta.unknown.color)
 </script>
 
 <template>
@@ -20,7 +15,7 @@ const itemColor = computed(() => FunctionTypeMeta[props.item.type]?.color || Fun
         class="flex cursor-pointer items-center gap-x-1 p-1 text-black dark:text-white"
         :class="[item.is_active ? 'bg-gray-200 opacity-100 dark:bg-gray-700' : 'opacity-60 hover:opacity-100']"
     >
-        <Icon :icon="itemIcon" class="h-5 w-5 shrink-0" :style="{ color: itemColor }" />
+        <FunctionIcon :type="props.item.type" class="h-5 w-5 shrink-0" />
         {{ item.api_name }}
     </div>
 </template>

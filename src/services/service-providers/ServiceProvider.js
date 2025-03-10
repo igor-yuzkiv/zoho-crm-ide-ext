@@ -59,8 +59,8 @@ export class ServiceProvider {
         this.metadata = { ...this.metadata, ...partial }
     }
 
-    isFunctionSyncRequired(item) {
-        return !item?.script
+    isFunctionSyncRequired(fn) {
+        return !fn?.script
     }
 
     /**
