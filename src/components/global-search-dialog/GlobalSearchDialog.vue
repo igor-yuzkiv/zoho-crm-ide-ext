@@ -77,7 +77,7 @@ function executeSearch() {
                 (!selectedFunctionType.value || i.type === selectedFunctionType.value)
         )
         .map((i) => {
-            const index = searchRegex ? i.script.search(searchRegex) : i.script.toLowerCase().indexOf(searchInput.value)
+            const index = searchRegex ? i.script.search(searchRegex) : i.script.toLowerCase().indexOf(searchInput.value.toLowerCase())
 
             return index !== -1 ? { ...i, matchIndex: index, matchedLine: getMatchingLines(i.script, index, 0) } : null
         })
