@@ -12,9 +12,9 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import Menubar from 'primevue/menubar'
 import Toast from 'primevue/toast'
 import FunctionsList from '@/components/functions/FunctionsList.vue'
+import GlobalSearchDialog from '@/components/global-search-dialog/GlobalSearchDialog.vue'
 import ProviderSelect from '@/components/provider-select/ProviderSelect.vue'
 import RefreshButton from '@/components/refresh-button/RefreshButton.vue'
-import GlobalSearchDialog from '@/components/global-search-dialog/GlobalSearchDialog.vue'
 import SettingsDialog from '@/components/settings-dialog/SettingsDialog.vue'
 
 const tobBarMenuItems = [
@@ -92,7 +92,7 @@ onBeforeMount(async () => {
         <div class="flex h-8 w-full items-center justify-between bg-gray-100 px-2 dark:bg-gray-800">
             <div class="flex items-center">
                 <div class="bottom-bar-item">Functions: {{ workspace.functions.length }}</div>
-                <div class="bottom-bar-item" @click="workspace.clearCache()">Clear cache</div>
+                <div class="bottom-bar-item" @click="workspace.refresh(true)">Clear cache</div>
             </div>
 
             <Button

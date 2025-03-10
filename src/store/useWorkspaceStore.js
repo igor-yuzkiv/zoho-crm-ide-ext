@@ -20,37 +20,38 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     const provider = computed(() => providersStore.providersMap[currentProviderId.value] || null)
     const functions = computed(() => functionsStore.getFunctions(currentProviderId.value))
 
-
-    async function refresh() {
-        await providersStore.loadProviders();
-        if (currentProviderId.value) {
-            await functionsStore.loadFunctions(provider.value, true)
-        }
-    }
-
-    async function clearCache() {
-        functionsStore.clearCache(provider.value.id)
-        await functionsStore.loadFunctions(provider.value, false)
-    }
-
     async function init() {
         try {
             isLoading.value = true
             await providersStore.loadProviders()
+
+            for (const provider of providersStore.providers) {
+                functionsStore.loadCachedFunction(provider.id)
+            }
+
             if (!provider.value && providersStore.providers.length) {
                 currentProviderId.value = providersStore.connected?.length
                     ? providersStore.connected[0].id
                     : providersStore.providers[0].id
 
-                if (currentProviderId.value) {
-                    functionsStore.loadFunctions(provider.value, true).catch(console.error)
-                }
+                await functionsStore.loadFunctions(provider.value)
             }
         } catch (e) {
             toast.add({ summary: 'Failed to load workspace data', severity: 'error' })
             console.error(e)
         } finally {
             isLoading.value = false
+        }
+    }
+
+    async function refresh(clearCache = false) {
+        if (clearCache) {
+            functionsStore.clearCache(provider.value.id)
+        }
+
+        await providersStore.loadProviders()
+        if (currentProviderId.value) {
+            await functionsStore.loadFunctions(provider.value, true)
         }
     }
 
@@ -66,6 +67,5 @@ export const useWorkspaceStore = defineStore('workspace', () => {
         init,
         setProvider,
         refresh,
-        clearCache,
     }
 })

@@ -23,11 +23,6 @@ export const useFunctionsStore = defineStore('functions', () => {
         return cached ? JSON.parse(cached) : []
     }
 
-    function clearCache(providerId) {
-        localStorageUtil.removeItem(`functions:${providerId}`)
-        functionPerProvider.value[providerId] = []
-    }
-
     function hasFunctions(providerId) {
         return functionPerProvider.value[providerId]?.length > 0
     }
@@ -53,6 +48,22 @@ export const useFunctionsStore = defineStore('functions', () => {
             : [...updatedFunctions.values()]
 
         cacheFunctions(providerId, functionPerProvider.value[providerId])
+    }
+
+    function clearCache(providerId) {
+        localStorageUtil.removeItem(`functions:${providerId}`)
+        functionPerProvider.value[providerId] = []
+    }
+
+    function loadCachedFunction(providerId) {
+        if (!providerId) {
+            return
+        }
+
+        const cached = getCachedFunctions(providerId)
+        if (cached.length) {
+            setFunctions(providerId, cached)
+        }
     }
 
     async function fetchFunctionsList(provider) {
@@ -135,8 +146,9 @@ export const useFunctionsStore = defineStore('functions', () => {
         allFunction,
         getFunctions,
         hasFunctions,
-        loadFunctions,
         clearCache,
+        loadFunctions,
+        loadCachedFunction,
         refreshFunction,
     }
 })
