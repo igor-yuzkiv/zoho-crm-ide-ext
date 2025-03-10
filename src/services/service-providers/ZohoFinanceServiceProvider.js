@@ -93,7 +93,7 @@ export class ZohoFinanceServiceProvider extends ServiceProvider {
         }
 
         return {
-            functions: customfunctions.map(normalizeFinanceFunctionData, this.id),
+            functions: customfunctions.map(i => normalizeFinanceFunctionData(i, this.id)),
             has_more: page_context?.has_more_page || false,
         }
     }

@@ -90,7 +90,7 @@ export class ZohoCrmServiceProvider extends ServiceProvider {
         const response = (await fetchCrmFunctions(this.tab.id, this.metadata.org_id, start, per_page)) || []
 
         return {
-            functions: response.length ? response.map(normalizeCrmFunctionData, this.id) : [],
+            functions: response.length ? response.map(i => normalizeCrmFunctionData(i, this.id)) : [],
             has_more: response.length >= per_page,
         }
     }
