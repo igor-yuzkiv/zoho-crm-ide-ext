@@ -28,7 +28,7 @@ const tobBarMenuItems = [
     },
     {
         label: 'Export',
-        command: () => console.log("Click: 'Export'"),
+        command: () => onClickExportFunctions(),
     },
     {
         label: 'Commit',
@@ -51,6 +51,14 @@ function onFunctionClick(item) {
     }
 
     router.push({ name: AppRouteName.functionOverview, params: { function_id: item.id } })
+}
+
+async function onClickExportFunctions() {
+    if (!workspace.provider || workspace.isLoading || functionsStore.isLoading) {
+        return;
+    }
+
+    await functionsStore.downloadFunctionZip(workspace.provider.id);
 }
 
 onBeforeMount(async () => {

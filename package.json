@@ -17,6 +17,7 @@
         "@primeuix/themes": "^1.0.0",
         "axios": "^1.8.1",
         "date-fns": "^4.1.0",
+        "jszip": "^3.10.1",
         "lodash": "^4.17.21",
         "monaco-editor": "^0.52.2",
         "pinia": "^3.0.1",

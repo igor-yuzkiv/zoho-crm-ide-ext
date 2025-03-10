@@ -1,8 +1,9 @@
-import { CACHE_TTL } from '@/config/index.js'
 import localStorageUtil from '@/utils/local-storage.util.js'
+import JSZip from 'jszip'
 import { chunk } from 'lodash'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { CACHE_TTL } from '@/config/index.js'
 
 export const useFunctionsStore = defineStore('functions', () => {
     const functionPerProvider = ref({})
@@ -140,6 +141,46 @@ export const useFunctionsStore = defineStore('functions', () => {
         }
     }
 
+    async function downloadFunctionZip(providerId) {
+        const items = getFunctions(providerId)
+        if (!items.length) {
+            return
+        }
+
+        try {
+            isLoading.value = true
+            const zip = new JSZip()
+
+            for (const item of items) {
+                const folder = zip.folder(item.api_name)
+                if (!folder) {
+                    continue
+                }
+
+                if (item?.script) {
+                    folder.file(`${item.api_name}.deluge.js`, item.script)
+                }
+
+                if (item?.documentation) {
+                    folder.file(`${item.api_name}.md`, item.documentation)
+                }
+
+                folder.file(`${item.api_name}.meta.json`, JSON.stringify(item, null, 2))
+            }
+
+            const content = await zip.generateAsync({ type: 'blob' })
+            const url = URL.createObjectURL(content)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${providerId}-functions.zip`
+            a.click()
+        } catch (e) {
+            console.error('Failed to download function zip', e)
+        } finally {
+            isLoading.value = false
+        }
+    }
+
     return {
         isLoading,
         functionPerProvider,
@@ -151,5 +192,6 @@ export const useFunctionsStore = defineStore('functions', () => {
         loadCachedFunction,
         refreshFunction,
         setFunctions,
+        downloadFunctionZip,
     }
 })
