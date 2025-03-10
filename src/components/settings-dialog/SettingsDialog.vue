@@ -15,7 +15,7 @@ const selectedTab = ref('projects')
 </script>
 
 <template>
-    <Dialog header="Settings" v-model:visible="visible" modal class="w-[98%] border-none lg:w-2/4" :draggable="false">
+    <Dialog header="Settings" v-model:visible="visible" modal class="w-[98%] border-none lg:w-3/4" :draggable="false">
         <Tabs v-model:value="selectedTab">
             <TabList class="flex flex-col">
                 <Tab value="projects" class="px-2 py-1">Projects</Tab>
