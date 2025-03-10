@@ -118,7 +118,7 @@ async function onClickJumpToFunction() {
         v-model:visible="visible"
         modal
         :draggable="false"
-        class="w-[98%] border-none lg:w-2/4 xl:w-2/4"
+        class="w-[98%] border-none lg:w-2/4"
         :pt="{ header: { class: 'p-2' }, footer: { class: 'p-2 bg-gray-100 dark:bg-black rounded-b-lg' } }"
         content-class="p-0 overflow-hidden flex flex-col"
     >
